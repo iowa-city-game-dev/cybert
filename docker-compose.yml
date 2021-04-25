@@ -1,0 +1,8 @@
+version: "3.9"
+services:
+  bot:
+    build:
+      context: .
+      target: develop
+    volumes:
+    - ./src:/cybert/src

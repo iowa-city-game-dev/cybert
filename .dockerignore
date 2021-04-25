@@ -1,0 +1,9 @@
+# Ignore everything by default
+**
+
+# Allowed files and directories
+!package.json
+!package-lock.json
+!tsconfig.json
+!.eslintrc.js
+!src/
