@@ -4,5 +4,7 @@ services:
     build:
       context: .
       target: develop
+    env_file:
+      - .env
     volumes:
     - ./src:/cybert/src
