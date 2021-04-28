@@ -5,7 +5,7 @@ import {welcome} from './actions/welcome-new-member';
 
 const client = new Client();
 
-logger.info('message="CyBert is starting up."');
+logger.info(`message="CyBert is starting up.", version="${environment.botVersion}"`);
 
 client.on('ready', () => logger.info('message="CyBert is ready."'));
 client.on('guildMemberAdd', welcome);
