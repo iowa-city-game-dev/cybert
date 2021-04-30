@@ -40,8 +40,8 @@ jobs:
       - name: Build image
         id: buildImage
         run: >
-          docker build -t registry.heroku.com/cybert/worker . &&
-          docker save --output cybert-image.tar registry.heroku.com/cybert/worker
+          docker build -t registry.heroku.com/cybert-bot/worker . &&
+          docker save --output cybert-image.tar registry.heroku.com/cybert-bot/worker
       - name: Store image
         id: storeImage
         if: ${{github.ref == 'refs/heads/main'}}
@@ -74,7 +74,7 @@ jobs:
           printf "$NETRC_FILE" > ~/.netrc &&
           heroku container:login &&
           docker load --input cybert-image.tar &&
-          docker push registry.heroku.com/cybert/worker &&
+          docker push registry.heroku.com/cybert-bot/worker &&
           heroku container:release worker
   pushVersionTag:
     name: Push version tag
