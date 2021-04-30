@@ -75,7 +75,7 @@ jobs:
           heroku container:login &&
           docker load --input cybert-image.tar &&
           docker push registry.heroku.com/cybert-bot/worker &&
-          heroku container:release worker
+          heroku container:release worker --app cybert-bot
   pushVersionTag:
     name: Push version tag
     runs-on: ubuntu-latest
