@@ -7,7 +7,7 @@ import {environment} from '../utils/environment';
  *
  * @param member The new member.
  */
-export function welcome(member: GuildMember): void {
+export function welcomeNewMember(member: GuildMember): void {
   const welcomeChannel = member.guild.channels.cache.find(
     channel => channel.name === environment.welcomeChannelName && channel.type == 'text'
   ) as TextChannel;
