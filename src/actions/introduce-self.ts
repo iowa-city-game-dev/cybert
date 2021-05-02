@@ -1,5 +1,6 @@
-import {Guild, TextChannel} from 'discord.js';
+import {Guild} from 'discord.js';
 import {environment} from '../utils/environment';
+import {getChannel, sendMessages} from '../utils/message-utils';
 import {logger} from '../utils/logger';
 
 /**
@@ -8,13 +9,7 @@ import {logger} from '../utils/logger';
  * @param guild The server to do the introduction on.
  */
 export function introduceSelf(guild: Guild): void {
-  const welcomeChannel = guild.channels.cache.find(
-    channel => channel.name === environment.welcomeChannelName && channel.type == 'text'
-  ) as TextChannel;
-  if (welcomeChannel) {
-    welcomeChannel.send('Hello, I am CyBert.')
-      .catch(error => logger.error({message: 'message="Unable to send introduction message."', error}));
-  } else {
-    logger.error(`message="Unable to find channel.", channelName="${environment.welcomeChannelName}"`);
-  }
+  logger.info('message="CyBert joined new server. Giving introduction."');
+  const welcomeChannel = getChannel(environment.welcomeChannelName, guild);
+  sendMessages(welcomeChannel, ['Hello, I am CyBert.']);
 }

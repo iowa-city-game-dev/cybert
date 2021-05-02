@@ -1,6 +1,7 @@
-import {GuildMember, TextChannel} from 'discord.js';
-import {logger} from '../utils/logger';
+import {GuildMember} from 'discord.js';
 import {environment} from '../utils/environment';
+import {getChannel, sendMessages} from '../utils/message-utils';
+import {logger} from '../utils/logger';
 
 /**
  * Send a message welcoming the given member to the server.
@@ -8,14 +9,8 @@ import {environment} from '../utils/environment';
  * @param member The new member.
  */
 export function welcomeNewMember(member: GuildMember): void {
-  const welcomeChannel = member.guild.channels.cache.find(
-    channel => channel.name === environment.welcomeChannelName && channel.type == 'text'
-  ) as TextChannel;
-  if (welcomeChannel) {
-    welcomeChannel.send(`Welcome, ${member}! Please feel free to introduce yourself.`)
-      .catch(error => logger.error({message: `message="Unable to send welcome message.", memberId="${member.id}"`,
-        error}));
-  } else {
-    logger.error(`message="Unable to find channel.", channelName="${environment.welcomeChannelName}"`);
-  }
+  logger.info(`message="New member joined server. Sending welcome message.", memberName="${member.displayName}", ` +
+    `memberId="${member.id}"`);
+  const welcomeChannel = getChannel(environment.welcomeChannelName, member.guild);
+  sendMessages(welcomeChannel, [`Welcome, ${member}! Please feel free to introduce yourself.`]);
 }

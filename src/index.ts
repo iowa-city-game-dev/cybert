@@ -5,12 +5,13 @@ import {welcomeNewMember} from './actions/welcome-new-member';
 import {introduceSelf} from './actions/introduce-self';
 
 const client = new Client();
-
 logger.info(`message="CyBert is starting up.", version="${environment.botVersion}"`);
 
+// Set up event handlers.
 client.on('ready', () => logger.info('message="CyBert is ready."'));
 client.on('guildCreate', introduceSelf);
 client.on('guildMemberAdd', welcomeNewMember);
 
+// Connect CyBert to Discord.
 client.login(environment.botToken)
   .catch(error => logger.error({message: 'message="CyBert failed to start."', error}));
