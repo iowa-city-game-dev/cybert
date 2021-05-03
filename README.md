@@ -6,7 +6,7 @@ CyBert is a Discord bot for the Iowa City Game Dev Meetup.
 
 ### Features
 
-- CyBert introduces himself when he first joins the Discord server.
+- CyBert introduces himself in the `#general` text channel when he first joins the Discord server.
 - When a new member joins the Discord server, CyBert welcomes them in the `#general` text channel and asks them to introduce themselves.
 - *_(Not yet implemented) -_* CyBert sends reminders of upcoming events in the `#announcements` text channel, using the meetup's Google Calendar for reference.
 - *_(Not yet implemented) -_* Members of the Discord server can send commands to CyBert in the `#cybert` text channel, for performing various actions.
@@ -16,7 +16,7 @@ CyBert is a Discord bot for the Iowa City Game Dev Meetup.
 
 ### Personality
 
-CyBert is a well-meaning but socially awkward robot. He tries his best to make everyone feel comfortable and welcomed, and he also tries to keep people informed of what's going on. He sometimes has problems with controlling himself, and he often makes cute robot noises.
+CyBert is a well-meaning but socially awkward robot. He tries his best to make everyone feel comfortable and welcomed, and he also tries to keep people informed of what's going on. He sometimes has problems with controlling himself, and he often makes cute robot noises. He tends to speak in somewhat short sentences, never uses contractions, and sometimes uses uncommon ("fancy" or "intellectual") words.
 
 ### Design principles
 
@@ -57,7 +57,7 @@ To create a bot account, follow these steps:
 3. Navigate to the "Bot" tab of your application and click "Add Bot". It will ask for confirmation.
 4. Once the bot account has been created, you can change its username to whatever you want (probably something like "CyBert Test"). You also need to turn on the "Server Members Intent" option under "Privileged Gateway Intents". This will allow the bot account to receive events when new members join the Discord server it's a member of. Save your changes.
 
-After your bot account has been set up, you can add it as a member of a Discord server (you should create your own test server for this in Discord). Use a browser to navigate to the URL `https://discord.com/api/oauth2/authorize?client_id=<applicationId>&permissions=1342655552&scope=bot`, replacing `<applicationId>` with the ID of the application you created in the previous steps (this can be found under "Application ID" in the application's "General Information" tab). Follow the steps shown to add the bot user to your test Discord server).
+After your bot account has been set up, you can add it as a member of a Discord server (you should create your own test server for this in Discord). Use a browser to navigate to the URL [https://discord.com/api/oauth2/authorize?client_id=<applicationId>&permissions=1342655552&scope=bot](https://discord.com/api/oauth2/authorize?client_id=<applicationId>&permissions=1342655552&scope=bot), replacing `<applicationId>` with the ID of the application you created in the previous steps (this can be found under "Application ID" in the application's "General Information" tab). Follow the steps shown to add the bot user to your test Discord server).
 
 ### Running CyBert on your machine
 

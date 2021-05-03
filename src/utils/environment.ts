@@ -5,5 +5,5 @@ export const environment = {
   botAverageWordsPerMinute: 120,
   botMaxVariationInWordsPerMinute: 30,
   averageCharactersPerWord: 5,
-  welcomeChannelName: 'welcome'
+  generalChannelName: 'general'
 } as const;
