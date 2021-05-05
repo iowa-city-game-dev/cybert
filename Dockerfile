@@ -16,6 +16,9 @@ CMD ["npm", "run", "start:watch"]
 
 FROM develop as production
 
-RUN npm run build
+RUN \
+  npm run lint && \
+  npm run test && \
+  npm run build
 
 CMD ["npm", "run", "start"]

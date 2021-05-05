@@ -5,5 +5,8 @@
 !package.json
 !package-lock.json
 !tsconfig.json
+!tsconfig.test.json
 !.eslintrc.js
+!jasmine.json
 !src/
+!test/
