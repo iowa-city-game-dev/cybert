@@ -1,12 +1,14 @@
 import {Guild, TextChannel} from 'discord.js';
-import {logger} from './logger';
+import {Logger} from './logger';
 import {Constants} from './constants';
+import {RandomUtils} from './random-utils';
 
 /**
  * This class provides functions to help with sending messages.
  */
 export class MessageUtils {
-  constructor(private constants: Constants) {
+  constructor(private readonly logger: Logger, private readonly constants: Constants,
+    private readonly randomUtils: RandomUtils) {
   }
 
   /**
@@ -14,30 +16,32 @@ export class MessageUtils {
    *
    * @param channel The channel.
    * @param messages The messages to send.
+   * @return A promise that resolves after the given messages have been sent.
    */
-  public async sendMessages(channel: TextChannel | null, messages: string[]): Promise<void> {
+  public async sendMessages(channel: Readonly<TextChannel | null>, messages: readonly string[]): Promise<void> {
     if (channel) {
       for (const message of messages) {
         await this.pretendToThink();
         await this.sendMessage(channel, message);
       }
     } else {
-      logger.error('message="Unable to send message(s) - channel not defined."');
+      throw new Error('Unable to send message(s) - channel not defined.');
     }
   }
 
   /**
-   * Get the channel with the given name from the given guild.
+   * Get the channel with the given name from the given guild. Returns `null` if the channel does not exist.
    *
    * @param channelName The channel name.
    * @param guild The guild.
    */
-  public getChannel(channelName: string, guild: Guild): TextChannel | null {
+  public getChannel(channelName: Readonly<string>, guild: Readonly<Guild>): TextChannel | null {
     const channel = guild.channels.cache.find(
       channel => channel.name === channelName && channel.type == 'text'
     ) as TextChannel;
     if (!channel) {
-      logger.warn(`message="Unable to find channel.", channelName="${channelName}"`);
+      this.logger.warn('Unable to find channel.', {channelName});
+      return null;
     }
     return channel;
   }
@@ -48,17 +52,13 @@ export class MessageUtils {
    *
    * @param channel The channel.
    * @param message The message.
+   * @return A promise that resolves after the given message has been sent.
    */
-  private async sendMessage(channel: TextChannel, message: string): Promise<void> {
+  private async sendMessage(channel: Readonly<TextChannel>, message: Readonly<string>): Promise<void> {
     channel.startTyping();
     await this.pretendToTypeMessage(message.length);
     channel.stopTyping();
-
-    try {
-      await channel.send(message);
-    } catch (error) {
-      logger.error({message: 'message="Unable to send message."', error});
-    }
+    await channel.send(message, {});
   }
 
   /**
@@ -67,7 +67,8 @@ export class MessageUtils {
    * @return A promise that resolves when the time is up.
    */
   private pretendToThink(): Promise<void> {
-    const thinkingTimeMillis = this.constants.botMaxThinkingTimeInSeconds * Math.random() * 1000;
+    const thinkingTimeMillis =
+      this.constants.botMaxThinkingTimeInSeconds * this.randomUtils.generateRandomNumber() * 1000;
     return new Promise<void>(resolve => setTimeout(resolve, thinkingTimeMillis));
   }
 
@@ -77,9 +78,9 @@ export class MessageUtils {
    * @param messageLength The length of the message.
    * @return A promise that resolves when the time is up.
    */
-  private pretendToTypeMessage(messageLength: number): Promise<void> {
+  private pretendToTypeMessage(messageLength: Readonly<number>): Promise<void> {
     const wordsPerMinute = this.constants.botAverageWordsPerMinute + ((this.constants.botMaxVariationInWordsPerMinute *
-      Math.random()) - (this.constants.botMaxVariationInWordsPerMinute / 2));
+      this.randomUtils.generateRandomNumber()) - (this.constants.botMaxVariationInWordsPerMinute / 2));
     const typingTimeMillis = (1 / (wordsPerMinute * this.constants.averageCharactersPerWord)) * messageLength * 60 *
       1000;
     return new Promise<void>(resolve => setTimeout(resolve, typingTimeMillis));

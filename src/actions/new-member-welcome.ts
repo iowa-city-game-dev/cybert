@@ -1,6 +1,6 @@
 import {GuildMember} from 'discord.js';
 import {Constants} from '../utils/constants';
-import {logger} from '../utils/logger';
+import {Logger} from '../utils/logger';
 import {DialogUtils} from '../utils/dialog-utils';
 import {MessageUtils} from '../utils/message-utils';
 
@@ -8,19 +8,28 @@ import {MessageUtils} from '../utils/message-utils';
  * This class allows CyBert to welcome new members.
  */
 export class NewMemberWelcome {
-  constructor(private constants: Constants, private dialogUtils: DialogUtils, private messageUtils: MessageUtils) {
+  constructor(private readonly logger: Logger, private readonly constants: Constants,
+    private readonly dialogUtils: DialogUtils, private readonly messageUtils: MessageUtils) {
   }
 
   /**
    * Send a message welcoming the given member to the server.
    *
    * @param member The new member.
+   * @return A promise that resolves after the welcome messages have been sent.
    */
-  public welcomeNewMember(member: GuildMember): void {
-    logger.info(`message="New member joined server. Sending welcome message.", memberName="${member.displayName}", ` +
-      `memberId="${member.id}"`);
-    const welcomeChannel = this.messageUtils.getChannel(this.constants.generalChannelName, member.guild);
-    this.messageUtils.sendMessages(welcomeChannel, this.generateWelcomeMessages(member));
+  public async welcomeNewMember(member: GuildMember): Promise<void> {
+    this.logger.info('New member joined server. Sending welcome message.', {
+      memberName: member.displayName,
+      memberId: member.id
+    });
+    const generalChannel = this.messageUtils.getChannel(this.constants.generalChannelName, member.guild);
+
+    try {
+      await this.messageUtils.sendMessages(generalChannel, this.generateWelcomeMessages(member));
+    } catch (error) {
+      this.logger.error('Unable to send welcome message.', error);
+    }
   }
 
   /**

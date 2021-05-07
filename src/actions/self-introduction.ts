@@ -1,6 +1,6 @@
 import {Guild} from 'discord.js';
 import {Constants} from '../utils/constants';
-import {logger} from '../utils/logger';
+import {Logger} from '../utils/logger';
 import {MessageUtils} from '../utils/message-utils';
 import {DialogUtils} from '../utils/dialog-utils';
 
@@ -8,20 +8,36 @@ import {DialogUtils} from '../utils/dialog-utils';
  * This class allows CyBert to introduce himself.
  */
 export class SelfIntroduction {
-  constructor(private constants: Constants, private dialogUtils: DialogUtils, private messageUtils: MessageUtils) {
+  constructor(private readonly logger: Logger, private readonly constants: Constants,
+    private readonly dialogUtils: DialogUtils, private readonly messageUtils: MessageUtils) {
   }
 
   /**
    * Have CyBert introduce himself to the server.
    *
    * @param guild The server to do the introduction on.
+   * @return A promise that resolves after the introduction messages have been sent.
    */
-  public introduceSelf(guild: Guild): void {
-    logger.info('message="CyBert joined a new server. Giving an introduction."');
-    const welcomeChannel = this.messageUtils.getChannel(this.constants.generalChannelName, guild);
-    this.messageUtils.sendMessages(welcomeChannel, [
+  public async introduceSelf(guild: Guild): Promise<void> {
+    this.logger.info('CyBert joined a new server. Giving an introduction.');
+    const generalChannel = this.messageUtils.getChannel(this.constants.generalChannelName, guild);
+
+    try {
+      await this.messageUtils.sendMessages(generalChannel, this.getIntroductionMessages());
+    } catch (error) {
+      this.logger.error('Unable to send introduction.', error);
+    }
+  }
+
+  /**
+   * Get the introduction messages to send.
+   *
+   * @return The introduction messages.
+   */
+  private getIntroductionMessages(): string[] {
+    return [
       '_Bwwwwwdoodoodadadeepdeepdoodoodadadeep...wooowaaaweeeewrrrrbleeeeblaaaachhh-**BOINGA**-**BOINGA**-' +
-        'khhhhhSCHAAAAABLBLBLBLBLBLshhhh..._',
+      'khhhhhSCHAAAAABLBLBLBLBLBLshhhh..._',
       'Oh. OH MY.',
       'I am terribly sorry about that. That was the sound of my dial-up modem connecting to the internet.',
       '(I do wish I had been built with more modern technology.)',
@@ -29,6 +45,6 @@ export class SelfIntroduction {
       'I was invited here to help with things like sending reminders about events and welcoming new members.',
       'Welcome..... CyBert. (Sorry. I was just practicing.)',
       this.dialogUtils.makeRobotNoise()
-    ]);
+    ];
   }
 }

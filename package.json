@@ -14,7 +14,7 @@
   "homepage": "https://github.com/iowa-city-game-dev/cybert#readme",
   "scripts": {
     "clean": "shx rm -rf dist",
-    "lint": "eslint src",
+    "lint": "eslint src test",
     "test": "npm run clean && tsc --project tsconfig.test.json && jasmine --config=jasmine.json",
     "build": "npm run clean && tsc",
     "start:watch": "shx mkdir dist && shx echo > dist/index.js && concurrently -n tsc,node \"tsc --watch --preserveWatchOutput\" \"nodemon --watch dist dist/index.js\"",

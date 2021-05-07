@@ -1,6 +1,6 @@
 export class Constants {
   public readonly botToken = process.env.BOT_TOKEN;
-  public readonly botVersion = process.env.npm_package_version;
+  public readonly botVersion = process.env.npm_package_version || 'undefined';
   public readonly botMaxThinkingTimeInSeconds = 5;
   public readonly botAverageWordsPerMinute = 120;
   public readonly botMaxVariationInWordsPerMinute = 30;

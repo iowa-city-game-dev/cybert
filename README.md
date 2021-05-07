@@ -39,8 +39,9 @@ This project is built with the following technologies:
 
 - **[Node.js](https://nodejs.dev/)**, for running server-side JavaScript.
 - **[TypeScript](https://www.typescriptlang.org/)**, for making it easier and less error-prone to write JavaScript code.
-- **[ESLint](https://eslint.org/)**, for ensuring clean and correct TypeScript syntax.
 - **[EditorConfig](https://editorconfig.org/)**, for maintaining consistent code formatting between different editors.
+- **[ESLint](https://eslint.org/)**, for ensuring clean and correct TypeScript syntax.
+- **[Jasmine](https://jasmine.github.io/)**, for unit testing.
 - **[Discord.js](https://discord.js.org/)**, for integrating with the Discord API.
 - **[Docker](https://www.docker.com/products/docker-desktop)**, for running the project both in the development environment and in production.
 - **[GitHub Actions](https://github.com/features/actions)**, for building and deploying the project.
