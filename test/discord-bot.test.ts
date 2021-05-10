@@ -1,6 +1,6 @@
 import {DiscordBot} from '../src/discord-bot';
 import {Constants} from '../src/utils/constants';
-import {Client} from 'discord.js';
+import {Client, Guild, GuildMember} from 'discord.js';
 import {SelfIntroduction} from '../src/actions/self-introduction';
 import {NewMemberWelcome} from '../src/actions/new-member-welcome';
 import createSpyObj = jasmine.createSpyObj;
@@ -13,8 +13,8 @@ describe('DiscordBot', () => {
   let mockLogger: SpyObj<Logger>;
   let mockDiscordClient: SpyObj<Client>;
   let mockConstants: SpyObj<Constants>;
-  let mockSelfIntroduction: SelfIntroduction;
-  let mockNewMemberWelcome: NewMemberWelcome;
+  let mockSelfIntroduction: SpyObj<SelfIntroduction>;
+  let mockNewMemberWelcome: SpyObj<NewMemberWelcome>;
 
   let discordBot: DiscordBot;
 
@@ -34,9 +34,26 @@ describe('DiscordBot', () => {
 
   describe('initialize', () => {
     it('should set the client event handlers', () => {
+      const guildCreateEvent = 'guildCreate';
+      const guildMemberAddEvent = 'guildMemberAdd';
+      const mockGuild: Guild = createSpyObj('mockGuild', [], {id: 'guildId'});
+      const mockGuildMember: GuildMember = createSpyObj('mockGuildMember', [], {id: 'guildMember'});
+
+      const eventToHandler = new Map<string, (...args: unknown[]) => unknown>();
+      mockDiscordClient.on.and.callFake((event: string, handler: (...args: unknown[]) => unknown) => {
+        eventToHandler.set(event, handler);
+        return mockDiscordClient;
+      });
+
       discordBot.initialize();
-      expect(mockDiscordClient.on).toHaveBeenCalledWith('guildCreate', mockSelfIntroduction.introduceSelf);
-      expect(mockDiscordClient.on).toHaveBeenCalledWith('guildMemberAdd', mockNewMemberWelcome.welcomeNewMember);
+
+      expect(eventToHandler.has(guildCreateEvent)).toBeTrue();
+      (eventToHandler.get(guildCreateEvent) as (guild: Guild) => unknown)(mockGuild);
+      expect(mockSelfIntroduction.introduceSelf).toHaveBeenCalledOnceWith(mockGuild);
+
+      expect(eventToHandler.has(guildMemberAddEvent)).toBeTrue();
+      (eventToHandler.get(guildMemberAddEvent) as (member: GuildMember) => unknown)(mockGuildMember);
+      expect(mockNewMemberWelcome.welcomeNewMember).toHaveBeenCalledOnceWith(mockGuildMember);
     });
 
     it('should log in using the configured bot token', () => {
