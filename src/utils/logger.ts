@@ -88,9 +88,9 @@ export class Logger {
   private static writeLog(winstonLogMethod: (infoObject: Record<string, unknown>) => winston.Logger,
     logMessage: Readonly<string>, keyValuePairs?: Readonly<{[key: string]: string}>, error?: Readonly<Error>): void {
 
-    let message = `message=${logMessage}`;
+    let message = `message="${logMessage}"`;
     if (keyValuePairs) {
-      for (const key in Object.getOwnPropertyNames(keyValuePairs)) {
+      for (const key of Object.getOwnPropertyNames(keyValuePairs)) {
         message += `, ${key}="${keyValuePairs[key]}"`;
       }
     }
