@@ -27,8 +27,8 @@ export class DiscordBot {
    */
   private setUpEventHandlers(): void {
     this.discordClient.on('ready', () => this.logger.info('CyBert is ready.'));
-    this.discordClient.on('guildCreate', this.selfIntroduction.introduceSelf);
-    this.discordClient.on('guildMemberAdd', this.newMemberWelcome.welcomeNewMember);
+    this.discordClient.on('guildCreate', guild => this.selfIntroduction.introduceSelf(guild));
+    this.discordClient.on('guildMemberAdd', member => this.newMemberWelcome.welcomeNewMember(member));
   }
 
   /**
