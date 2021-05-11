@@ -3,6 +3,7 @@ import {Client} from 'discord.js';
 import {Logger} from './utils/logger';
 import {GuildMemberAddHandler} from './handlers/guild-member-add-handler';
 import {GuildCreateHandler} from './handlers/guild-create-handler';
+import {MessageHandler} from './handlers/message-handler';
 
 /**
  * This class is responsible for setting up the Discord Bot.
@@ -10,7 +11,7 @@ import {GuildCreateHandler} from './handlers/guild-create-handler';
 export class DiscordBot {
   constructor(private readonly logger: Logger, private readonly constants: Constants,
     private readonly discordClient: Client,private readonly guildCreateHandler: GuildCreateHandler,
-    private guildMemberAddHandler: GuildMemberAddHandler) {
+    private guildMemberAddHandler: GuildMemberAddHandler, private messageHandler: MessageHandler) {
   }
 
   /**
@@ -29,6 +30,7 @@ export class DiscordBot {
     this.discordClient.on('ready', () => this.logger.info('CyBert is ready.'));
     this.discordClient.on('guildCreate', guild => this.guildCreateHandler.handleEvent(guild));
     this.discordClient.on('guildMemberAdd', member => this.guildMemberAddHandler.handleEvent(member));
+    this.discordClient.on('message', message => this.messageHandler.handleEvent(message));
   }
 
   /**

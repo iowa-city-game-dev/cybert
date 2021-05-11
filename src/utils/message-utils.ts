@@ -1,4 +1,4 @@
-import {Guild, TextChannel} from 'discord.js';
+import {Guild, Message, TextChannel} from 'discord.js';
 import {Logger} from './logger';
 import {Constants} from './constants';
 import {RandomUtils} from './random-utils';
@@ -18,7 +18,7 @@ export class MessageUtils {
    * @param messages The messages to send.
    * @return A promise that resolves after the given messages have been sent.
    */
-  public async sendMessages(channel: Readonly<TextChannel | null>, messages: readonly string[]): Promise<void> {
+  public async sendMessages(channel: TextChannel | null, messages: readonly string[]): Promise<void> {
     if (channel) {
       for (const message of messages) {
         await this.pretendToThink();
@@ -30,12 +30,29 @@ export class MessageUtils {
   }
 
   /**
+   * Add an emoji reaction to the given message.
+   *
+   * @param message The message.
+   * @return A promise that resolves after the reaction has been added.
+   */
+  public async addReaction(message: Message): Promise<void> {
+    const emojiName = this.chooseRandomEmoji();
+    const emoji = message.client.emojis.cache.find(emoji => emoji.name === emojiName);
+    if (emoji) {
+      await this.pretendToThink();
+      await message.react(emoji.id);
+    } else {
+      throw new Error(`Unable to react to message - emoji "${emojiName}" not found.`);
+    }
+  }
+
+  /**
    * Get the channel with the given name from the given guild. Returns `null` if the channel does not exist.
    *
    * @param channelName The channel name.
    * @param guild The guild.
    */
-  public getChannel(channelName: Readonly<string>, guild: Readonly<Guild>): TextChannel | null {
+  public getChannel(channelName: string, guild: Guild): TextChannel | null {
     const channel = guild.channels.cache.find(
       channel => channel.name === channelName && channel.type == 'text'
     ) as TextChannel;
@@ -54,7 +71,7 @@ export class MessageUtils {
    * @param message The message.
    * @return A promise that resolves after the given message has been sent.
    */
-  private async sendMessage(channel: Readonly<TextChannel>, message: Readonly<string>): Promise<void> {
+  private async sendMessage(channel: TextChannel, message: string): Promise<void> {
     channel.startTyping();
     await this.pretendToTypeMessage(message.length);
     channel.stopTyping();
@@ -78,11 +95,41 @@ export class MessageUtils {
    * @param messageLength The length of the message.
    * @return A promise that resolves when the time is up.
    */
-  private pretendToTypeMessage(messageLength: Readonly<number>): Promise<void> {
+  private pretendToTypeMessage(messageLength: number): Promise<void> {
     const wordsPerMinute = this.constants.botAverageWordsPerMinute + ((this.constants.botMaxVariationInWordsPerMinute *
       this.randomUtils.generateRandomNumber()) - (this.constants.botMaxVariationInWordsPerMinute / 2));
     const typingTimeMillis = (1 / (wordsPerMinute * this.constants.averageCharactersPerWord)) * messageLength * 60 *
       1000;
     return new Promise<void>(resolve => setTimeout(resolve, typingTimeMillis));
+  }
+
+  /**
+   * Choose a random emoji out of the available emoji.
+   *
+   * @return The name of the chosen emoji.
+   */
+  private chooseRandomEmoji(): string {
+    const availableEmoji: readonly string[] = [
+      'autobot',
+      'bb8',
+      'bender_dance',
+      'blinking_robot',
+      'bmo',
+      'bot',
+      'c3po',
+      'megaman_spin',
+      'meow_bot',
+      'mettaton',
+      'music_robot',
+      'nyan_lovebot',
+      'r2d2',
+      'robot_blue',
+      'robot_dance',
+      'robot_groove',
+      'robot_head',
+      'robot_walk',
+      'robot_with_clamps'
+    ];
+    return this.randomUtils.chooseRandomString(availableEmoji);
   }
 }

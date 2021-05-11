@@ -1,7 +1,7 @@
 import {Constants} from '../../src/utils/constants';
 import SpyObj = jasmine.SpyObj;
 import {MessageUtils} from '../../src/utils/message-utils';
-import {Collection, Guild, GuildChannel, GuildChannelManager, TextChannel} from 'discord.js';
+import {Collection, Guild, GuildChannel, GuildChannelManager, GuildEmoji, Message, TextChannel} from 'discord.js';
 import {RandomUtils} from '../../src/utils/random-utils';
 import createSpyObj = jasmine.createSpyObj;
 import clock = jasmine.clock;
@@ -27,14 +27,18 @@ describe('MessageUtils', () => {
       botMaxVariationInWordsPerMinute,
       averageCharactersPerWord
     });
-    mockRandomUtils = createSpyObj('mockRandomUtils', ['generateRandomNumber']);
+    mockRandomUtils = createSpyObj('mockRandomUtils', ['generateRandomNumber', 'chooseRandomString']);
     messageUtils = new MessageUtils(mockLogger, mockConstants, mockRandomUtils);
   });
+
+  function calculateThinkingTime(randomNumber: number): number {
+    return botMaxThinkingTimeInSeconds * 1000 * randomNumber;
+  }
 
   describe('sendMessages', () => {
     const message1 = 'Message 1.';
     const message2 = 'This is message 2.';
-    const randomNumbers: Readonly<number[]> = [.31, .84, .49, .04];
+    const randomNumbers: readonly number[] = [.31, .84, .49, .04];
 
     let mockChannel: SpyObj<TextChannel>;
 
@@ -46,11 +50,7 @@ describe('MessageUtils', () => {
 
     afterEach(() => clock().uninstall());
 
-    function calculateThinkingTime(randomNumber: Readonly<number>): number {
-      return botMaxThinkingTimeInSeconds * 1000 * randomNumber;
-    }
-
-    function calculateTypingTime(messageLength: Readonly<number>, randomNumber: Readonly<number>): number {
+    function calculateTypingTime(messageLength: number, randomNumber: number): number {
       const wordsPerMinute = mockConstants.botAverageWordsPerMinute + ((mockConstants.botMaxVariationInWordsPerMinute *
         randomNumber) - (mockConstants.botMaxVariationInWordsPerMinute / 2));
       return (1 / (wordsPerMinute * mockConstants.averageCharactersPerWord)) * messageLength * 60 * 1000;
@@ -156,6 +156,77 @@ describe('MessageUtils', () => {
       clock().tick(calculateThinkingTime(randomNumbers[0]));
       await TestHelper.clearEventQueue();
       clock().tick(calculateTypingTime(message1.length, randomNumbers[1]));
+
+      try {
+        await promise;
+        fail('Expected error to be thrown.');
+      } catch (error) {
+        expect(error).toEqual(expectedError);
+      }
+    });
+  });
+
+  describe('addReaction', () => {
+    const emojiName = 'autobot';
+
+    let mockMessage: SpyObj<Message>;
+    let mockGuildChannelCache: Collection<string, GuildEmoji>;
+
+    beforeEach(() => {
+      clock().install();
+      mockGuildChannelCache = new Collection<string, GuildEmoji>();
+      mockMessage = createSpyObj('mockMessage', ['react'], {
+        client: {
+          emojis: {
+            cache: mockGuildChannelCache
+          }
+        }
+      });
+      mockRandomUtils.generateRandomNumber.and.returnValue(0);
+      mockRandomUtils.chooseRandomString.and.callFake(possibleStrings => possibleStrings[0]);
+    });
+
+    afterEach(() => clock().uninstall());
+
+    it('should add a reaction with proper timing', async () => {
+      const emojiId = 'emojiId';
+      const mockEmoji: SpyObj<GuildEmoji> = createSpyObj('mockEmoji', [], {id: emojiId, name: emojiName});
+      mockGuildChannelCache.set('1', mockEmoji);
+
+      messageUtils.addReaction(mockMessage);
+
+      clock().tick(calculateThinkingTime(0) - 1);
+      await TestHelper.clearEventQueue();
+
+      expect(mockMessage.react).not.toHaveBeenCalled();
+
+      clock().tick(1);
+      await TestHelper.clearEventQueue();
+
+      expect(mockMessage.react).toHaveBeenCalledOnceWith(emojiId);
+    });
+
+    it('should throw an error if the chosen emoji is not found', async () => {
+      try {
+        await messageUtils.addReaction(mockMessage);
+        fail('Expected error to be thrown.');
+      } catch (error) {
+        expect(error).toEqual(new Error(`Unable to react to message - emoji "${emojiName}" not found.`));
+      }
+    });
+
+    it('should throw an error if the adding of the reaction fails', async () => {
+      const emojiId = 'emojiId';
+      const mockEmoji: SpyObj<GuildEmoji> = createSpyObj('mockEmoji', [], {id: emojiId, name: emojiName});
+      mockGuildChannelCache.set('1', mockEmoji);
+
+      const expectedError = new Error('Sending of message failed.');
+      mockMessage.react.and.throwError(expectedError);
+
+      const promise = messageUtils.addReaction(mockMessage);
+
+      clock().tick(calculateThinkingTime(0));
+      await TestHelper.clearEventQueue();
 
       try {
         await promise;

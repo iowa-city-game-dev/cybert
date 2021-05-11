@@ -3,13 +3,15 @@ import {Constants} from '../utils/constants';
 import {Logger} from '../utils/logger';
 import {DialogUtils} from '../utils/dialog-utils';
 import {MessageUtils} from '../utils/message-utils';
+import {RandomUtils} from '../utils/random-utils';
 
 /**
  * This class handles `guildMemberAdd` events.
  */
 export class GuildMemberAddHandler {
   constructor(private readonly logger: Logger, private readonly constants: Constants,
-    private readonly dialogUtils: DialogUtils, private readonly messageUtils: MessageUtils) {
+    private readonly dialogUtils: DialogUtils, private readonly messageUtils: MessageUtils,
+    private readonly randomUtils: RandomUtils) {
   }
 
   /**
@@ -28,16 +30,13 @@ export class GuildMemberAddHandler {
    * @return A promise that resolves after the welcome messages have been sent.
    */
   private async welcomeNewMember(member: GuildMember): Promise<void> {
-    this.logger.info('New member joined server. Sending welcome message.', {
-      memberName: member.displayName,
-      memberId: member.id
-    });
+    this.logger.info('New member joined server. Sending welcome message.', {memberId: member.id});
     const generalChannel = this.messageUtils.getChannel(this.constants.generalChannelName, member.guild);
 
     try {
       await this.messageUtils.sendMessages(generalChannel, this.generateWelcomeMessages(member));
     } catch (error) {
-      this.logger.error('Unable to send welcome message.', error);
+      this.logger.error('Unable to send welcome message to new member.', error, {memberId: member.id});
     }
   }
 
@@ -48,25 +47,25 @@ export class GuildMemberAddHandler {
    * @return A series of welcome messages.
    */
   private generateWelcomeMessages(member: GuildMember): string[] {
-    const greetings = [
+    const greetings: readonly string[] = [
       `Hello ${member}.`,
       `Oh! It is ${member}!`,
       `${member}, how are you?`,
       `Greetings, ${member}!`
     ];
-    const welcomeMessages = [
+    const welcomeMessages: readonly string[] = [
       'Welcome to the group.',
       'We are glad you are here.',
       'It is marvelous that you have joined us.',
       'It is a pleasure to meet you.'
     ];
-    const awkwardComments = [
+    const awkwardComments: readonly string[] = [
       'Please familiarize yourself with your surroundings.',
       'You really should meet these other humans. They are great.',
       'I must say, I am very intrigued to meet yet another human.',
       'I hope you enjoy this virtual environment. It is quite suitable for prolonged habitation.'
     ];
-    const introductionRequests = [
+    const introductionRequests: readonly string[] = [
       'When you are ready, we would love to hear a little bit about you.',
       'Also, please feel free to introduce yourself.',
       'We would like to get to know you. Could you tell us about yourself?',
@@ -74,10 +73,10 @@ export class GuildMemberAddHandler {
     ];
 
     return [
-      `${this.dialogUtils.chooseRandomMessage(greetings)} ${this.dialogUtils.makeRobotNoise()} ` +
-        `${this.dialogUtils.chooseRandomMessage(welcomeMessages)} ` +
-        `${this.dialogUtils.chooseRandomMessage(awkwardComments)}`,
-      this.dialogUtils.chooseRandomMessage(introductionRequests),
+      `${this.randomUtils.chooseRandomString(greetings)} ${this.dialogUtils.makeRobotNoise()} ` +
+        `${this.randomUtils.chooseRandomString(welcomeMessages)} ` +
+        `${this.randomUtils.chooseRandomString(awkwardComments)}`,
+      this.randomUtils.chooseRandomString(introductionRequests),
       this.dialogUtils.makeRobotNoise()
     ];
   }

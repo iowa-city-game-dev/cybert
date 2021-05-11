@@ -1,24 +1,13 @@
+import {RandomUtils} from './random-utils';
+
 /**
  * This class provides functions to help with constructing dialog.
  */
-import {RandomUtils} from './random-utils';
-
 export class DialogUtils {
-  private readonly robotNoises: Readonly<string[]>;
+  private readonly robotNoises: readonly string[];
 
-  constructor(private readonly randomUtil: RandomUtils) {
+  constructor(private readonly randomUtils: RandomUtils) {
     this.robotNoises = DialogUtils.getRobotNoises();
-  }
-
-  /**
-   * Choose a random message from the given list of messages.
-   *
-   * @param possibleMessages The list of messages to choose from.
-   * @return A message from the list.
-   */
-  public chooseRandomMessage(possibleMessages: Readonly<string[]>): string {
-    const index = Math.floor(this.randomUtil.generateRandomNumber() * possibleMessages.length);
-    return possibleMessages[index];
   }
 
   /**
@@ -27,7 +16,7 @@ export class DialogUtils {
    * @return A robot noise.
    */
   public makeRobotNoise(): string {
-    return `_${this.chooseRandomMessage(this.robotNoises)}_`;
+    return `_${this.randomUtils.chooseRandomString(this.robotNoises)}_`;
   }
 
   /**

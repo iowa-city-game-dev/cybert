@@ -7,6 +7,7 @@ import {MessageUtils} from './utils/message-utils';
 import {DialogUtils} from './utils/dialog-utils';
 import {RandomUtils} from './utils/random-utils';
 import {Logger} from './utils/logger';
+import {MessageHandler} from './handlers/message-handler';
 
 // Instantiate dependencies.
 const logger = new Logger();
@@ -16,8 +17,10 @@ const randomUtils = new RandomUtils();
 const messageUtils = new MessageUtils(logger, constants, randomUtils);
 const dialogUtils = new DialogUtils(randomUtils);
 const guildCreateHandler = new GuildCreateHandler(logger, constants, dialogUtils, messageUtils);
-const guildMemberAddHandler = new GuildMemberAddHandler(logger, constants, dialogUtils, messageUtils);
+const guildMemberAddHandler = new GuildMemberAddHandler(logger, constants, dialogUtils, messageUtils, randomUtils);
+const messageHandler = new MessageHandler(logger, messageUtils);
 
 // Instantiate and initialize the discord bot.
-const discordBot = new DiscordBot(logger, constants, discordClient, guildCreateHandler, guildMemberAddHandler);
+const discordBot = new DiscordBot(logger, constants, discordClient, guildCreateHandler, guildMemberAddHandler,
+  messageHandler);
 discordBot.initialize();

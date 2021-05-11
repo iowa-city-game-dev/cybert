@@ -1,11 +1,12 @@
 import {DiscordBot} from '../src/discord-bot';
 import {Constants} from '../src/utils/constants';
-import {Client, Guild, GuildMember} from 'discord.js';
+import {Client, Guild, GuildMember, Message} from 'discord.js';
 import {GuildCreateHandler} from '../src/handlers/guild-create-handler';
 import {GuildMemberAddHandler} from '../src/handlers/guild-member-add-handler';
 import createSpyObj = jasmine.createSpyObj;
 import SpyObj = jasmine.SpyObj;
 import {Logger} from '../src/utils/logger';
+import {MessageHandler} from '../src/handlers/message-handler';
 
 describe('DiscordBot', () => {
   const botToken = 'botToken';
@@ -15,6 +16,7 @@ describe('DiscordBot', () => {
   let mockConstants: SpyObj<Constants>;
   let mockGuildCreateHandler: SpyObj<GuildCreateHandler>;
   let mockGuildMemberAddHandler: SpyObj<GuildMemberAddHandler>;
+  let mockMessageHandler: SpyObj<MessageHandler>;
 
   let discordBot: DiscordBot;
 
@@ -27,17 +29,20 @@ describe('DiscordBot', () => {
     mockConstants = createSpyObj('mockConstants', [], {botToken: botToken});
     mockGuildCreateHandler = createSpyObj('mockGuildCreateHandler', ['handleEvent']);
     mockGuildMemberAddHandler = createSpyObj('mockGuildMemberAddHandler', ['handleEvent']);
+    mockMessageHandler = createSpyObj('mockMessageHandler', ['handleEvent']);
 
     discordBot = new DiscordBot(mockLogger, mockConstants, mockDiscordClient, mockGuildCreateHandler,
-      mockGuildMemberAddHandler);
+      mockGuildMemberAddHandler, mockMessageHandler);
   });
 
   describe('initialize', () => {
     it('should set the client event handlers', () => {
       const guildCreateEvent = 'guildCreate';
       const guildMemberAddEvent = 'guildMemberAdd';
+      const messageEvent = 'message';
       const mockGuild: Guild = createSpyObj('mockGuild', [], {id: 'guildId'});
       const mockGuildMember: GuildMember = createSpyObj('mockGuildMember', [], {id: 'guildMember'});
+      const mockMessage: Message = createSpyObj('mockMessage', [], {id: 'message'});
 
       const eventToHandler = new Map<string, (...args: unknown[]) => unknown>();
       mockDiscordClient.on.and.callFake((event: string, handler: (...args: unknown[]) => unknown) => {
@@ -54,6 +59,10 @@ describe('DiscordBot', () => {
       expect(eventToHandler.has(guildMemberAddEvent)).toBeTrue();
       (eventToHandler.get(guildMemberAddEvent) as (member: GuildMember) => unknown)(mockGuildMember);
       expect(mockGuildMemberAddHandler.handleEvent).toHaveBeenCalledOnceWith(mockGuildMember);
+
+      expect(eventToHandler.has(messageEvent)).toBeTrue();
+      (eventToHandler.get(messageEvent) as (message: Message) => unknown)(mockMessage);
+      expect(mockMessageHandler.handleEvent).toHaveBeenCalledOnceWith(mockMessage);
     });
 
     it('should log in using the configured bot token', () => {

@@ -6,6 +6,7 @@ import {MessageUtils} from '../../src/utils/message-utils';
 import createSpyObj = jasmine.createSpyObj;
 import {Guild, GuildMember, TextChannel} from 'discord.js';
 import {GuildMemberAddHandler} from '../../src/handlers/guild-member-add-handler';
+import {RandomUtils} from '../../src/utils/random-utils';
 
 describe('GuildMemberAddHandler', () => {
   const generalChannelName = 'generalChannelName';
@@ -14,14 +15,17 @@ describe('GuildMemberAddHandler', () => {
   let mockConstants: SpyObj<Constants>;
   let mockDialogUtils: SpyObj<DialogUtils>;
   let mockMessageUtils: SpyObj<MessageUtils>;
+  let mockRandomUtils: SpyObj<RandomUtils>;
   let guildMemberAddHandler: GuildMemberAddHandler;
 
   beforeEach(() => {
     mockLogger = createSpyObj('mockLogger', ['debug', 'info', 'warn', 'error']);
     mockConstants = createSpyObj('mockConstants', [], {generalChannelName});
-    mockDialogUtils = createSpyObj('mockDialogUtils', ['makeRobotNoise', 'chooseRandomMessage']);
+    mockDialogUtils = createSpyObj('mockDialogUtils', ['makeRobotNoise']);
     mockMessageUtils = createSpyObj('mockMessageUtils', ['getChannel', 'sendMessages']);
-    guildMemberAddHandler = new GuildMemberAddHandler(mockLogger, mockConstants, mockDialogUtils, mockMessageUtils);
+    mockRandomUtils = createSpyObj('mockRandomUtils', ['chooseRandomString']);
+    guildMemberAddHandler = new GuildMemberAddHandler(mockLogger, mockConstants, mockDialogUtils, mockMessageUtils,
+      mockRandomUtils);
   });
 
   describe('handleEvent', () => {
@@ -35,8 +39,8 @@ describe('GuildMemberAddHandler', () => {
 
     beforeEach(() => {
       mockGuild = createSpyObj('mockGuild', [], {id: 'guildId'});
-      mockGuildMember = createSpyObj('mockGuildMember', ['toString'], {guild: mockGuild});
-      mockGuildMember.toString.and.returnValue(guildMemberId);
+      mockGuildMember = createSpyObj('mockGuildMember', ['toString'], {id: guildMemberId, guild: mockGuild});
+      mockGuildMember.toString.and.returnValue(`<${guildMemberId}>`);
       mockWelcomeChannel = createSpyObj('mockWelcomeChannel', ['send']);
       mockMessageUtils.getChannel.and.callFake((channelName, guild) => {
         if (channelName === generalChannelName && guild === mockGuild) {
@@ -49,12 +53,12 @@ describe('GuildMemberAddHandler', () => {
     });
 
     it('should use MessageUtils.sendMessages to send the correct sequence of welcome messages', () => {
-      mockDialogUtils.chooseRandomMessage.and.callFake(possibleMessages => possibleMessages[0]);
+      mockRandomUtils.chooseRandomString.and.callFake(possibleMessages => possibleMessages[0]);
 
       guildMemberAddHandler.handleEvent(mockGuildMember);
 
       expect(mockMessageUtils.sendMessages).toHaveBeenCalledOnceWith(mockWelcomeChannel, [
-        `Hello ${guildMemberId}. ${robotNoise1} Welcome to the group. Please familiarize yourself with your ` +
+        `Hello <${guildMemberId}>. ${robotNoise1} Welcome to the group. Please familiarize yourself with your ` +
           'surroundings.',
         'When you are ready, we would love to hear a little bit about you.',
         robotNoise2
@@ -67,7 +71,8 @@ describe('GuildMemberAddHandler', () => {
 
       guildMemberAddHandler.handleEvent(mockGuildMember);
 
-      expect(mockLogger.error).toHaveBeenCalledOnceWith('Unable to send welcome message.', error);
+      expect(mockLogger.error).toHaveBeenCalledOnceWith('Unable to send welcome message to new member.', error,
+        {memberId: guildMemberId});
     });
   });
 });

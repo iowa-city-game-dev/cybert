@@ -8,10 +8,10 @@ CyBert is a Discord bot for the Iowa City Game Dev Meetup.
 
 - CyBert introduces himself in the `#general` text channel when he first joins the Discord server.
 - When a new member joins the Discord server, CyBert welcomes them in the `#general` text channel and asks them to introduce themselves.
+- When someone says CyBert's name or something else robot-related in any text channel, he adds a reaction, choosing from an assortment of robot-themed emoji.
 - *_(Not yet implemented) -_* CyBert sends reminders of upcoming events in the `#announcements` text channel, using the meetup's Google Calendar for reference.
 - *_(Not yet implemented) -_* Members of the Discord server can send commands to CyBert in the `#cybert` text channel, for performing various actions.
   - *_(Not yet implemented) -_* Members can ask CyBert to add or remove discipline-specific roles to be shown under their name.
-- *_(Not yet implemented) -_* When someone says CyBert's name in any text channel, he adds a reaction, choosing from an assortment of robot-themed emoji.
 - *_(Not yet implemented) -_* If CyBert goes offline and then comes back online, he makes a funny comment about it in the `#cybert` text channel. He'll also run his "system diagnostics" and output his version number.
 
 ### Personality
@@ -59,6 +59,12 @@ To create a bot account, follow these steps:
 4. Once the bot account has been created, you can change its username to whatever you want (probably something like "CyBert Test"). You also need to turn on the "Server Members Intent" option under "Privileged Gateway Intents". This will allow the bot account to receive events when new members join the Discord server it's a member of. Save your changes.
 
 After your bot account has been set up, you can add it as a member of a Discord server (you should create your own test server for this in Discord). Use a browser to navigate to the URL [https://discord.com/api/oauth2/authorize?client_id=<applicationId>&permissions=1342655552&scope=bot](https://discord.com/api/oauth2/authorize?client_id=<applicationId>&permissions=1342655552&scope=bot), replacing `<applicationId>` with the ID of the application you created in the previous steps (this can be found under "Application ID" in the application's "General Information" tab). Follow the steps shown to add the bot user to your test Discord server).
+
+#### Making emoji available
+
+In order for CyBert to add emoji responses to messages, the bot account will need access to the emoji in the `emoji` directory. A bot account has access to all emoji in all Discord servers it's a member of, so you'll need to upload the emoji either to the main server CyBert is active in, or to an alternate server the bot account is also a member of. CyBert finds the emoji by name, so their names need to be the same as their filenames in this repo (excluding the file extension).
+
+_**Note:** All the emoji used here were downloaded from [discordemojis.com](https://discordmojis.com/)._
 
 ### Running CyBert on your machine
 

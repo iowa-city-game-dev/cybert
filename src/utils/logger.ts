@@ -16,7 +16,7 @@ export class Logger {
    * @param logMessage The log message.
    * @param keyValuePairs Additional key/value pairs to log.
    */
-  public debug(logMessage: Readonly<string>, keyValuePairs?: Readonly<{[key: string]: string}>): void {
+  public debug(logMessage: string, keyValuePairs?: Readonly<{[key: string]: string}>): void {
     Logger.writeLog(this.logger.debug, logMessage, keyValuePairs);
   }
 
@@ -26,7 +26,7 @@ export class Logger {
    * @param logMessage The log message.
    * @param keyValuePairs Additional key/value pairs to log.
    */
-  public info(logMessage: Readonly<string>, keyValuePairs?: Readonly<{[key: string]: string}>): void {
+  public info(logMessage: string, keyValuePairs?: Readonly<{[key: string]: string}>): void {
     Logger.writeLog(this.logger.info, logMessage, keyValuePairs);
   }
 
@@ -36,7 +36,7 @@ export class Logger {
    * @param logMessage The log message.
    * @param keyValuePairs Additional key/value pairs to log.
    */
-  public warn(logMessage: Readonly<string>, keyValuePairs?: Readonly<{[key: string]: string}>): void {
+  public warn(logMessage: string, keyValuePairs?: Readonly<{[key: string]: string}>): void {
     Logger.writeLog(this.logger.warn, logMessage, keyValuePairs);
   }
 
@@ -47,7 +47,7 @@ export class Logger {
    * @param error An error to log.
    * @param keyValuePairs Additional key/value pairs to log.
    */
-  public error(logMessage: Readonly<string>, error?: Error, keyValuePairs?: Readonly<{[key: string]: string}>): void {
+  public error(logMessage: string, error?: Error, keyValuePairs?: Readonly<{[key: string]: string}>): void {
     Logger.writeLog(this.logger.error, logMessage, keyValuePairs, error);
   }
 
@@ -86,7 +86,7 @@ export class Logger {
    * @param error An error to log.
    */
   private static writeLog(winstonLogMethod: (infoObject: Record<string, unknown>) => winston.Logger,
-    logMessage: Readonly<string>, keyValuePairs?: Readonly<{[key: string]: string}>, error?: Readonly<Error>): void {
+    logMessage: string, keyValuePairs?: Readonly<{[key: string]: string}>, error?: Readonly<Error>): void {
 
     let message = `message="${logMessage}"`;
     if (keyValuePairs) {
