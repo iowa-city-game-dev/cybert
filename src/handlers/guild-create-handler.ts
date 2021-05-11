@@ -5,20 +5,29 @@ import {MessageUtils} from '../utils/message-utils';
 import {DialogUtils} from '../utils/dialog-utils';
 
 /**
- * This class allows CyBert to introduce himself.
+ * This class handles `guildCreate` events.
  */
-export class SelfIntroduction {
+export class GuildCreateHandler {
   constructor(private readonly logger: Logger, private readonly constants: Constants,
     private readonly dialogUtils: DialogUtils, private readonly messageUtils: MessageUtils) {
   }
 
   /**
-   * Have CyBert introduce himself to the server.
+   * Handle the `guildCreate` event for the given guild.
    *
-   * @param guild The server to do the introduction on.
+   * @param guild The new guild.
+   */
+  public handleEvent(guild: Guild): void {
+    this.introduceSelf(guild);
+  }
+
+  /**
+   * Have CyBert introduce himself to the guild.
+   *
+   * @param guild The guild to do the introduction on.
    * @return A promise that resolves after the introduction messages have been sent.
    */
-  public async introduceSelf(guild: Guild): Promise<void> {
+  private async introduceSelf(guild: Guild): Promise<void> {
     this.logger.info('CyBert joined a new server. Giving an introduction.');
     const generalChannel = this.messageUtils.getChannel(this.constants.generalChannelName, guild);
 

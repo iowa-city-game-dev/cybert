@@ -1,16 +1,16 @@
 import {Constants} from './utils/constants';
 import {Client} from 'discord.js';
 import {Logger} from './utils/logger';
-import {NewMemberWelcome} from './actions/new-member-welcome';
-import {SelfIntroduction} from './actions/self-introduction';
+import {GuildMemberAddHandler} from './handlers/guild-member-add-handler';
+import {GuildCreateHandler} from './handlers/guild-create-handler';
 
 /**
  * This class is responsible for setting up the Discord Bot.
  */
 export class DiscordBot {
   constructor(private readonly logger: Logger, private readonly constants: Constants,
-    private readonly discordClient: Client,private readonly selfIntroduction: SelfIntroduction,
-    private newMemberWelcome: NewMemberWelcome) {
+    private readonly discordClient: Client,private readonly guildCreateHandler: GuildCreateHandler,
+    private guildMemberAddHandler: GuildMemberAddHandler) {
   }
 
   /**
@@ -27,8 +27,8 @@ export class DiscordBot {
    */
   private setUpEventHandlers(): void {
     this.discordClient.on('ready', () => this.logger.info('CyBert is ready.'));
-    this.discordClient.on('guildCreate', guild => this.selfIntroduction.introduceSelf(guild));
-    this.discordClient.on('guildMemberAdd', member => this.newMemberWelcome.welcomeNewMember(member));
+    this.discordClient.on('guildCreate', guild => this.guildCreateHandler.handleEvent(guild));
+    this.discordClient.on('guildMemberAdd', member => this.guildMemberAddHandler.handleEvent(member));
   }
 
   /**

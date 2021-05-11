@@ -5,11 +5,20 @@ import {DialogUtils} from '../utils/dialog-utils';
 import {MessageUtils} from '../utils/message-utils';
 
 /**
- * This class allows CyBert to welcome new members.
+ * This class handles `guildMemberAdd` events.
  */
-export class NewMemberWelcome {
+export class GuildMemberAddHandler {
   constructor(private readonly logger: Logger, private readonly constants: Constants,
     private readonly dialogUtils: DialogUtils, private readonly messageUtils: MessageUtils) {
+  }
+
+  /**
+   * Handle the `guildMemberAdd` event for the given member.
+   *
+   * @param member The new member.
+   */
+  public handleEvent(member: GuildMember): void {
+    this.welcomeNewMember(member);
   }
 
   /**
@@ -18,7 +27,7 @@ export class NewMemberWelcome {
    * @param member The new member.
    * @return A promise that resolves after the welcome messages have been sent.
    */
-  public async welcomeNewMember(member: GuildMember): Promise<void> {
+  private async welcomeNewMember(member: GuildMember): Promise<void> {
     this.logger.info('New member joined server. Sending welcome message.', {
       memberName: member.displayName,
       memberId: member.id
