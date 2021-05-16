@@ -1,4 +1,6 @@
 # Use LF line endings.
 * text eol=lf
+
 *.gif binary
 *.png binary
+*.kra binary

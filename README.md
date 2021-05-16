@@ -1,5 +1,7 @@
 # CyBert
 
+![CyBert](images/avatar/avatar.png)
+
 CyBert is a Discord bot for the Iowa City Game Dev Meetup.
 
 ## Design
@@ -21,6 +23,10 @@ CyBert is a well-meaning but socially awkward robot. He tries his best to make e
 ### Design principles
 
 Features of CyBert should either be helpful or fun. Features that could be annoying should be avoided. For features that aren't innately annoying but might generate notifications frequently enough where it could be annoying, these should be contained within the `#cybert` text channel, so members can easily disable the notifications if they want.
+
+### Avatar
+
+CyBert's avatar was created using [Krita](https://krita.org/). Both the Krita project file and the PNG image are located in the `images/avatar` directory.
 
 ## Development
 
@@ -62,7 +68,7 @@ After your bot account has been set up, you can add it as a member of a Discord 
 
 #### Making emoji available
 
-In order for CyBert to add emoji responses to messages, the bot account will need access to the emoji in the `emoji` directory. A bot account has access to all emoji in all Discord servers it's a member of, so you'll need to upload the emoji either to the main server CyBert is active in, or to an alternate server the bot account is also a member of. CyBert finds the emoji by name, so their names need to be the same as their filenames in this repo (excluding the file extension).
+In order for CyBert to add emoji responses to messages, the bot account will need access to the emoji in the `images/emoji` directory. A bot account has access to all emoji in all Discord servers it's a member of, so you'll need to upload the emoji either to the main server CyBert is active in, or to an alternate server the bot account is also a member of. CyBert finds the emoji by name, so their names need to be the same as their filenames in this repo (excluding the file extension).
 
 _**Note:** All the emoji used here were downloaded from [discordemojis.com](https://discordmojis.com/)._
 
