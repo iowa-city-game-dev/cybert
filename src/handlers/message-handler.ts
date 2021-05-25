@@ -105,13 +105,28 @@ export class MessageHandler {
   }
 
   /**
+   * Check whether the given message mentions CyBert.
+   *
+   * @param message The message.
+   * @return `true` if the messsage mentions CyBert, or `false` if it does not.
+   */
+  private static mentionsCybert(message: Message): boolean {
+    const cybertUser = message.guild?.me;
+    if (cybertUser) {
+      return message.mentions.has(cybertUser, {ignoreEveryone: true, ignoreRoles: true});
+    } else {
+      return false;
+    }
+  }
+
+  /**
    * If the given message is robot-themed or includes CyBert's name, react with a robot emoji.
    *
    * @param message The message.
    * @return A promise that resolves after a reaction is added, or after it is determined no reaction is needed.
    */
   private async addReactionIfRobotThemed(message: Message): Promise<void> {
-    if (this.robotRegex.test(message.content)) {
+    if (this.robotRegex.test(message.content) || MessageHandler.mentionsCybert(message)) {
       this.logger.info('Received a robot-themed message. Reacting with an emoji.', {
         messageId: message.id,
         authorId: message.author.id

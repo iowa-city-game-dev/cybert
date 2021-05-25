@@ -3,7 +3,7 @@ import SpyObj = jasmine.SpyObj;
 import {Logger} from '../../src/utils/logger';
 import {MessageUtils} from '../../src/utils/message-utils';
 import createSpyObj = jasmine.createSpyObj;
-import {Client, Message} from 'discord.js';
+import {Client, Guild, GuildMember, Message, MessageMentions} from 'discord.js';
 
 describe('MessageHandler', () => {
   let mockLogger: SpyObj<Logger>;
@@ -20,6 +20,9 @@ describe('MessageHandler', () => {
     const cybertUserId = 'cybertUserId';
 
     let mockClient: SpyObj<Client>;
+    let mockCybertGuildMember: SpyObj<GuildMember>;
+    let mockGuild: SpyObj<Guild>;
+    let mockMessageMentions: SpyObj<MessageMentions>;
 
     beforeEach(() => {
       mockClient = createSpyObj('mockClient', [], {
@@ -27,6 +30,10 @@ describe('MessageHandler', () => {
           id: cybertUserId
         }
       });
+      mockCybertGuildMember = createSpyObj('mockCybertGuildMember', [], {id: cybertUserId});
+      mockGuild = createSpyObj('mockGuild', [], {me: mockCybertGuildMember});
+      mockMessageMentions = createSpyObj('mockMessageMentions', ['has']);
+      mockMessageMentions.has.and.returnValue(false);
     });
 
     it('should add a reaction if the message is not from CyBert and is robot-themed', () => {
@@ -35,6 +42,32 @@ describe('MessageHandler', () => {
           id: 'notCybertUserId'
         },
         content: 'This message mentions a robot.',
+        mentions: mockMessageMentions,
+        guild: mockGuild,
+        client: mockClient
+      });
+
+      messageHandler.handleEvent(mockMessage);
+
+      expect(mockMessageUtils.addReaction).toHaveBeenCalledOnceWith(mockMessage);
+    });
+
+    it('should add a reaction if the message is not from CyBert and mentions CyBert', () => {
+      mockMessageMentions.has.and.callFake((guildMember, options) => {
+        if (guildMember == mockCybertGuildMember && options?.ignoreRoles && options?.ignoreEveryone) {
+          return true;
+        } else {
+          return false;
+        }
+      });
+
+      const mockMessage: Message = createSpyObj('mockMessage', [], {
+        author: {
+          id: 'notCybertUserId'
+        },
+        content: 'Message.',
+        mentions: mockMessageMentions,
+        guild: mockGuild,
         client: mockClient
       });
 
@@ -49,6 +82,8 @@ describe('MessageHandler', () => {
           id: cybertUserId
         },
         content: 'This message mentions a robot.',
+        mentions: mockMessageMentions,
+        guild: mockGuild,
         client: mockClient
       });
 
@@ -57,12 +92,14 @@ describe('MessageHandler', () => {
       expect(mockMessageUtils.addReaction).not.toHaveBeenCalled();
     });
 
-    it('should not add a reaction if the message is not robot-themed', () => {
+    it('should not add a reaction if the message is not robot-themed and does not mention CyBert', () => {
       const mockMessage: Message = createSpyObj('mockMessage', [], {
         author: {
           id: 'notCybertUserId'
         },
         content: 'This is just an ordinary message.',
+        mentions: mockMessageMentions,
+        guild: mockGuild,
         client: mockClient
       });
 
@@ -81,6 +118,8 @@ describe('MessageHandler', () => {
           id: 'notCybertUserId'
         },
         content: 'This message mentions a robot.',
+        mentions: mockMessageMentions,
+        guild: mockGuild,
         client: mockClient
       });
 
