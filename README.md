@@ -51,7 +51,7 @@ This project is built with the following technologies:
 - **[Discord.js](https://discord.js.org/)**, for integrating with the Discord API.
 - **[Docker](https://www.docker.com/products/docker-desktop)**, for running the project both in the development environment and in production.
 - **[GitHub Actions](https://github.com/features/actions)**, for building and deploying the project.
-- **[Heroku](https://www.heroku.com/)**, for free cloud hosting.
+- **[Railway](https://railway.app/)**, for free cloud hosting.
 
 ### Creating a Discord bot account and connecting it to a Discord server
 

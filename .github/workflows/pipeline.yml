@@ -39,43 +39,29 @@ jobs:
         run: npm --no-git-tag-version version ${{needs.getVersion.outputs.version}}
       - name: Build image
         id: buildImage
-        run: >
-          docker build -t registry.heroku.com/cybert-bot/worker . &&
-          docker save --output cybert-image.tar registry.heroku.com/cybert-bot/worker
-      - name: Store image
-        id: storeImage
-        if: ${{github.ref == 'refs/heads/main'}}
-        uses: actions/upload-artifact@v2
-        with:
-          name: cybert-image
-          path: cybert-image.tar
+        run: docker build .
   deploy:
     name: Deploy
     if: ${{github.ref == 'refs/heads/main'}}
     runs-on: ubuntu-latest
-    needs: build
+    needs:
+      - getVersion
+      - build
     timeout-minutes: 10
     steps:
-      - name: Restore image
-        id: restoreImage
-        uses: actions/download-artifact@v2
-        with:
-          name: cybert-image
-      - name: Delete stored image
-        id: deleteStoredImage
-        uses: joutvhu/delete-artifact@v1
-        with:
-          name: cybert-image
+      - name: Set project version
+        id: setProjectVersion
+        run: npm --no-git-tag-version version ${{needs.getVersion.outputs.version}}
       - name: Deploy
         id: deploy
         env:
-          NETRC_FILE: ${{secrets.NETRC_FILE}}
+          RAILWAY_TOKEN: ${{secrets.RAILWAY_TOKEN}}
+          RAILWAY_PROJECT_ID: ${{secrets.RAILWAY_PROJECT_ID}}
+          NPM_CONFIG_PREFIX: ~/.npm-global
         run: >
-          printf "$NETRC_FILE" > ~/.netrc &&
-          heroku container:login &&
-          docker load --input cybert-image.tar &&
-          docker push registry.heroku.com/cybert-bot/worker &&
-          heroku container:release worker --app cybert-bot
+          npm install -g @railway/cli@0.2.22 &&
+          ~/.npm-global/bin/railway link $RAILWAY_PROJECT_ID &&
+          ~/.npm-global/bin/railway up
   pushVersionTag:
     name: Push version tag
     runs-on: ubuntu-latest
