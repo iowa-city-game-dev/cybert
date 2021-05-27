@@ -49,6 +49,9 @@ jobs:
       - build
     timeout-minutes: 10
     steps:
+      - name: Checkout repo
+        id: checkoutRepo
+        uses: actions/checkout@v2
       - name: Set project version
         id: setProjectVersion
         run: npm --no-git-tag-version version ${{needs.getVersion.outputs.version}}
