@@ -59,11 +59,9 @@ jobs:
         id: deploy
         env:
           RAILWAY_TOKEN: ${{secrets.RAILWAY_TOKEN}}
-          RAILWAY_PROJECT_ID: ${{secrets.RAILWAY_PROJECT_ID}}
           NPM_CONFIG_PREFIX: ~/.npm-global
         run: >
-          npm install -g @railway/cli@0.2.22 &&
-          ~/.npm-global/bin/railway link $RAILWAY_PROJECT_ID &&
+          npm install -g @railway/cli@0.2.25 &&
           ~/.npm-global/bin/railway up
   pushVersionTag:
     name: Push version tag
