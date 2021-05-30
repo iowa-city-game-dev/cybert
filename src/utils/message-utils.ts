@@ -1,7 +1,8 @@
-import {Guild, Message, TextChannel} from 'discord.js';
+import {Guild, Message, MessageEmbed, TextChannel} from 'discord.js';
 import {Logger} from './logger';
 import {Constants} from './constants';
 import {RandomUtils} from './random-utils';
+import {DateTime} from 'luxon';
 
 /**
  * This class provides functions to help with sending messages.
@@ -30,6 +31,32 @@ export class MessageUtils {
   }
 
   /**
+   * Send an embed with a countdown timer link to the given channel.
+   *
+   * @param channel The channel.
+   * @param eventTitle The title of the event.
+   * @param dateTime The date and time to count down to.
+   * @return A promise that resolves after the embed has been sent.
+   */
+  public async sendEventCountdownLink(channel: TextChannel | null, eventTitle: string, dateTime: DateTime):
+      Promise<void> {
+    if (channel) {
+      const link = this.constructCountdownTimerLink(
+          `${eventTitle} - ` +
+              `${dateTime.setZone(this.constants.timeZone).toLocaleString(DateTime.DATETIME_SHORT)} Central`,
+          eventTitle,
+          dateTime
+      );
+      const embed = new MessageEmbed()
+          .setDescription(`**${link}**\nClick the link above to see a countdown timer for the start of the event.`);
+      await this.pretendToThink();
+      await channel.send(embed);
+    } else {
+      throw new Error('Unable to send countdown timer link - channel not defined.');
+    }
+  }
+
+  /**
    * Add an emoji reaction to the given message.
    *
    * @param message The message.
@@ -54,7 +81,7 @@ export class MessageUtils {
    */
   public getChannel(channelName: string, guild: Guild): TextChannel | null {
     const channel = guild.channels.cache.find(
-      channel => channel.name === channelName && channel.type == 'text'
+        channel => channel.name === channelName && channel.type == 'text'
     ) as TextChannel;
     if (!channel) {
       this.logger.warn('Unable to find channel.', {channelName});
@@ -101,6 +128,31 @@ export class MessageUtils {
     const typingTimeMillis = (1 / (wordsPerMinute * this.constants.averageCharactersPerWord)) * messageLength * 60 *
       1000;
     return new Promise<void>(resolve => setTimeout(resolve, typingTimeMillis));
+  }
+
+  /**
+   * Get a link with the given text, which points to a countdown timer set to the given date and time.
+   *
+   * @param linkText The link text.
+   * @param timerTitle The title of the countdown timer.
+   * @param dateTime The date and time to count down to.
+   * @return A link.
+   */
+  public constructCountdownTimerLink(linkText: string, timerTitle: string, dateTime: DateTime): string {
+    const url = 'https://globaltimekeeper.com/countdown.php?' +
+      `yr=${dateTime.setZone(this.constants.timeZone).year}` +
+      `&mo=${dateTime.setZone(this.constants.timeZone).month}` +
+      `&dy=${dateTime.setZone(this.constants.timeZone).day}` +
+      `&hr=${dateTime.setZone(this.constants.timeZone).hour}` +
+      `&mi=${dateTime.setZone(this.constants.timeZone).minute}` +
+      `&tz=${encodeURIComponent(this.constants.timeZone)}` +
+      `&tx1=${encodeURIComponent(timerTitle)}` +
+      `&tx2=${encodeURIComponent('Time until event begins:')}` +
+      '&ad=0' +
+      '&ln=en' +
+      '&cl=2' +
+      '&bg=3';
+    return `[${linkText}](${url})`;
   }
 
   /**

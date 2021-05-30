@@ -25,7 +25,7 @@ describe('GuildMemberAddHandler', () => {
     mockMessageUtils = createSpyObj('mockMessageUtils', ['getChannel', 'sendMessages']);
     mockRandomUtils = createSpyObj('mockRandomUtils', ['chooseRandomString']);
     guildMemberAddHandler = new GuildMemberAddHandler(mockLogger, mockConstants, mockDialogUtils, mockMessageUtils,
-      mockRandomUtils);
+        mockRandomUtils);
   });
 
   describe('handleEvent', () => {
@@ -72,7 +72,7 @@ describe('GuildMemberAddHandler', () => {
       guildMemberAddHandler.handleEvent(mockGuildMember);
 
       expect(mockLogger.error).toHaveBeenCalledOnceWith('Unable to send welcome message to new member.', error,
-        {memberId: guildMemberId});
+          {memberId: guildMemberId});
     });
   });
 });

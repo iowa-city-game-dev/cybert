@@ -4,6 +4,7 @@ import {Logger} from './utils/logger';
 import {GuildMemberAddHandler} from './handlers/guild-member-add-handler';
 import {GuildCreateHandler} from './handlers/guild-create-handler';
 import {MessageHandler} from './handlers/message-handler';
+import {EventTracker} from './event-reminders/event-tracker';
 
 /**
  * This class is responsible for setting up the Discord Bot.
@@ -11,7 +12,8 @@ import {MessageHandler} from './handlers/message-handler';
 export class DiscordBot {
   constructor(private readonly logger: Logger, private readonly constants: Constants,
     private readonly discordClient: Client,private readonly guildCreateHandler: GuildCreateHandler,
-    private guildMemberAddHandler: GuildMemberAddHandler, private messageHandler: MessageHandler) {
+    private readonly guildMemberAddHandler: GuildMemberAddHandler, private readonly messageHandler: MessageHandler,
+    private readonly eventTracker: EventTracker) {
   }
 
   /**
@@ -41,6 +43,7 @@ export class DiscordBot {
   private async login(): Promise<void> {
     try {
       await this.discordClient.login(this.constants.botToken);
+      this.eventTracker.initialize(this.discordClient.guilds.cache.array()[0]);
     } catch (error) {
       this.logger.error('CyBert failed to start.', error);
     }

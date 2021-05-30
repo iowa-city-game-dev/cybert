@@ -1,12 +1,14 @@
 import {DiscordBot} from '../src/discord-bot';
 import {Constants} from '../src/utils/constants';
-import {Client, Guild, GuildMember, Message} from 'discord.js';
+import {Client, Collection, Guild, GuildMember, Message} from 'discord.js';
 import {GuildCreateHandler} from '../src/handlers/guild-create-handler';
 import {GuildMemberAddHandler} from '../src/handlers/guild-member-add-handler';
 import createSpyObj = jasmine.createSpyObj;
 import SpyObj = jasmine.SpyObj;
 import {Logger} from '../src/utils/logger';
 import {MessageHandler} from '../src/handlers/message-handler';
+import {EventTracker} from '../src/event-reminders/event-tracker';
+import {TestHelper} from './test-helper';
 
 describe('DiscordBot', () => {
   const botToken = 'botToken';
@@ -17,22 +19,34 @@ describe('DiscordBot', () => {
   let mockGuildCreateHandler: SpyObj<GuildCreateHandler>;
   let mockGuildMemberAddHandler: SpyObj<GuildMemberAddHandler>;
   let mockMessageHandler: SpyObj<MessageHandler>;
+  let mockEventTracker: SpyObj<EventTracker>;
+  let mockGuild: SpyObj<Guild>;
 
   let discordBot: DiscordBot;
 
   beforeEach(() => {
     mockLogger = createSpyObj('mockLogger', ['debug', 'info', 'warn', 'error']);
 
-    mockDiscordClient = createSpyObj('mockDiscordClient', ['on', 'login']);
+    const guildId = 'guild';
+    mockGuild = createSpyObj('mockGuild', [], {id: guildId});
+    const mockGuildsCache = new Collection<string, Guild>();
+    mockGuildsCache.set(guildId, mockGuild);
+
+    mockDiscordClient = createSpyObj('mockDiscordClient', ['on', 'login'], {
+      guilds: {
+        cache: mockGuildsCache
+      }
+    });
     mockDiscordClient.login.and.returnValue(new Promise<string>(resolve => resolve('')));
 
     mockConstants = createSpyObj('mockConstants', [], {botToken: botToken});
     mockGuildCreateHandler = createSpyObj('mockGuildCreateHandler', ['handleEvent']);
     mockGuildMemberAddHandler = createSpyObj('mockGuildMemberAddHandler', ['handleEvent']);
     mockMessageHandler = createSpyObj('mockMessageHandler', ['handleEvent']);
+    mockEventTracker = createSpyObj('mockEventTracker', ['initialize']);
 
     discordBot = new DiscordBot(mockLogger, mockConstants, mockDiscordClient, mockGuildCreateHandler,
-      mockGuildMemberAddHandler, mockMessageHandler);
+        mockGuildMemberAddHandler, mockMessageHandler, mockEventTracker);
   });
 
   describe('initialize', () => {
@@ -86,6 +100,20 @@ describe('DiscordBot', () => {
       });
 
       discordBot.initialize();
+    });
+
+    it('should initialize the event tracker after logging in', async () => {
+      const loginResolvablePromise = TestHelper.getResolvablePromise<string>();
+      mockDiscordClient.login.and.callFake(() => loginResolvablePromise.promise);
+
+      discordBot.initialize();
+
+      expect(mockEventTracker.initialize).not.toHaveBeenCalled();
+
+      loginResolvablePromise.resolver('');
+      await loginResolvablePromise.promise;
+
+      expect(mockEventTracker.initialize).toHaveBeenCalledOnceWith(mockGuild);
     });
   });
 });

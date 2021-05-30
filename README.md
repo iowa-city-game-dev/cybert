@@ -11,7 +11,7 @@ CyBert is a Discord bot for the Iowa City Game Dev Meetup.
 - CyBert introduces himself in the `#general` text channel when he first joins the Discord server.
 - When a new member joins the Discord server, CyBert welcomes them in the `#general` text channel and asks them to introduce themselves.
 - When someone says CyBert's name or something else robot-related in any text channel, he adds a reaction, choosing from an assortment of robot-themed emoji.
-- *_(Not yet implemented) -_* CyBert sends reminders of upcoming events in the `#announcements` text channel, using the meetup's Google Calendar for reference.
+- CyBert sends reminders of upcoming events in the `#announcements` text channel, using the meetup's Google Calendar for reference.
 - *_(Not yet implemented) -_* Members of the Discord server can send commands to CyBert in the `#cybert` text channel, for performing various actions.
   - *_(Not yet implemented) -_* Members can ask CyBert to add or remove discipline-specific roles to be shown under their name.
 - *_(Not yet implemented) -_* If CyBert goes offline and then comes back online, he makes a funny comment about it in the `#cybert` text channel. He'll also run his "system diagnostics" and output his version number.

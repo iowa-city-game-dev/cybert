@@ -60,18 +60,18 @@ export class Logger {
     return winston.createLogger({
       level: 'info',
       format: winston.format.combine(
-        winston.format.timestamp({format: 'YYYY-MM-DD HH:mm:ss.SSS'}),
-        winston.format.printf(info => {
-          let padding = '';
-          for (let i = 0; i < (5 - info.level.length); i++) {
-            padding += ' ';
-          }
-          let log = `${info.timestamp} [${info.level}]${padding} ${info.message}`;
-          if (info.error) {
-            log += `\n${info.error.stack}`;
-          }
-          return log;
-        })
+          winston.format.timestamp({format: 'YYYY-MM-DD HH:mm:ss.SSS'}),
+          winston.format.printf(info => {
+            let padding = '';
+            for (let i = 0; i < (5 - info.level.length); i++) {
+              padding += ' ';
+            }
+            let log = `${info.timestamp} [${info.level}]${padding} ${info.message}`;
+            if (info.error) {
+              log += `\n${info.error.stack}`;
+            }
+            return log;
+          })
       ),
       transports: [new winston.transports.Console()]
     });
@@ -86,8 +86,7 @@ export class Logger {
    * @param error An error to log.
    */
   private static writeLog(winstonLogMethod: (infoObject: Record<string, unknown>) => winston.Logger,
-    logMessage: string, keyValuePairs?: Readonly<{[key: string]: string}>, error?: Readonly<Error>): void {
-
+      logMessage: string, keyValuePairs?: Readonly<{[key: string]: string}>, error?: Readonly<Error>): void {
     let message = `message="${logMessage}"`;
     if (keyValuePairs) {
       for (const key of Object.getOwnPropertyNames(keyValuePairs)) {
