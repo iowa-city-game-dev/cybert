@@ -23,6 +23,7 @@ export class GameDevTogetherEventNotifier extends EventNotifier {
    */
   public cancelNotifications(): void {
     if (this.startNotificationTimeout) {
+      this.logger.info(`Canceling start notification for ${this.event.title} event.`, {eventId: this.event.id});
       this.startNotificationTimeout.clear();
       this.startNotificationTimeout = null;
     }
@@ -33,6 +34,7 @@ export class GameDevTogetherEventNotifier extends EventNotifier {
    */
   protected scheduleNotifications(): void {
     if (DateTime.now() <= this.event.startTime) {
+      this.logger.info(`Scheduling start notification for ${this.event.title} event.`, {eventId: this.event.id});
       this.startNotificationTimeout = setTimeoutAt(() => this.sendStartNotification(), this.event.startTime.toMillis());
     }
   }

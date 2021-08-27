@@ -25,14 +25,17 @@ export class GameDevDiscussionsEventNotifier extends EventNotifier {
    */
   public cancelNotifications(): void {
     if (this.reminderNotificationTimeout) {
+      this.logger.info(`Canceling reminder notification for ${this.event.title} event.`, {eventId: this.event.id});
       this.reminderNotificationTimeout.clear();
       this.reminderNotificationTimeout = null;
     }
     if (this.startNotificationTimeout) {
+      this.logger.info(`Canceling start notification for ${this.event.title} event.`, {eventId: this.event.id});
       this.startNotificationTimeout.clear();
       this.startNotificationTimeout = null;
     }
     if (this.endNotificationTimeout) {
+      this.logger.info(`Canceling end notification for ${this.event.title} event.`, {eventId: this.event.id});
       this.endNotificationTimeout.clear();
       this.endNotificationTimeout = null;
     }
@@ -46,13 +49,16 @@ export class GameDevDiscussionsEventNotifier extends EventNotifier {
     const oneDayBeforeStart = this.event.startTime.minus({days: 1});
 
     if (now <= oneDayBeforeStart) {
+      this.logger.info(`Scheduling reminder notification for ${this.event.title} event.`, {eventId: this.event.id});
       this.reminderNotificationTimeout =
         setTimeoutAt(() => this.sendReminderNotification(), oneDayBeforeStart.toMillis());
     }
     if (now <= this.event.startTime) {
+      this.logger.info(`Scheduling start notification for ${this.event.title} event.`, {eventId: this.event.id});
       this.startNotificationTimeout = setTimeoutAt(() => this.sendStartNotification(), this.event.startTime.toMillis());
     }
     if (now <= this.event.endTime && this.nextEventStartTime) {
+      this.logger.info(`Scheduling end notification for ${this.event.title} event.`, {eventId: this.event.id});
       this.endNotificationTimeout = setTimeoutAt(() => this.sendEndNotification(), this.event.endTime.toMillis());
     }
   }
