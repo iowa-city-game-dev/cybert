@@ -25,17 +25,17 @@ export class GeneralEventNotifier extends EventNotifier {
    */
   public cancelNotifications(): void {
     if (this.announcementNotificationTimeout) {
-      this.logger.info(`Canceling announcement notification for general event.`, {eventId: this.event.id});
+      this.logger.info('Canceling announcement notification for general event.', {eventId: this.event.id});
       this.announcementNotificationTimeout.clear();
       this.announcementNotificationTimeout = null;
     }
     if (this.reminderNotificationTimeout) {
-      this.logger.info(`Canceling reminder notification for general event.`, {eventId: this.event.id});
+      this.logger.info('Canceling reminder notification for general event.', {eventId: this.event.id});
       this.reminderNotificationTimeout.clear();
       this.reminderNotificationTimeout = null;
     }
     if (this.startNotificationTimeout) {
-      this.logger.info(`Canceling start notification for general event.`, {eventId: this.event.id});
+      this.logger.info('Canceling start notification for general event.', {eventId: this.event.id});
       this.startNotificationTimeout.clear();
       this.startNotificationTimeout = null;
     }
@@ -50,17 +50,17 @@ export class GeneralEventNotifier extends EventNotifier {
     const oneDayBeforeStart = this.event.startTime.minus({days: 1});
 
     if (now <= threeWeeksBeforeStart) {
-      this.logger.info(`Scheduling announcement notification for general event.`, {eventId: this.event.id});
+      this.logger.info('Scheduling announcement notification for general event.', {eventId: this.event.id});
       this.announcementNotificationTimeout =
         setTimeoutAt(() => this.sendAnnouncementNotification(), threeWeeksBeforeStart.toMillis());
     }
     if (now <= oneDayBeforeStart) {
-      this.logger.info(`Scheduling reminder notification for general event.`, {eventId: this.event.id});
+      this.logger.info('Scheduling reminder notification for general event.', {eventId: this.event.id});
       this.reminderNotificationTimeout =
         setTimeoutAt(() => this.sendReminderNotification(), oneDayBeforeStart.toMillis());
     }
     if (now <= this.event.startTime) {
-      this.logger.info(`Scheduling start notification for general event.`, {eventId: this.event.id});
+      this.logger.info('Scheduling start notification for general event.', {eventId: this.event.id});
       this.startNotificationTimeout = setTimeoutAt(() => this.sendStartNotification(), this.event.startTime.toMillis());
     }
   }
