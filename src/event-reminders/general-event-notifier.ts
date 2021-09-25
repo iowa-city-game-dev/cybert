@@ -24,6 +24,7 @@ export class GeneralEventNotifier extends EventNotifier {
    * If notifications have been scheduled, cancel them.
    */
   public cancelNotifications(): void {
+    this.logger.info('Canceling notifications for general event.', {eventId: this.event.id});
     if (this.announcementNotificationTimeout) {
       this.logger.info('Canceling announcement notification for general event.', {eventId: this.event.id});
       this.announcementNotificationTimeout.clear();

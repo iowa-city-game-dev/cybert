@@ -22,6 +22,7 @@ export class GameDevTogetherEventNotifier extends EventNotifier {
    * If a notification has been scheduled, cancel it.
    */
   public cancelNotifications(): void {
+    this.logger.info(`Canceling notifications for ${this.event.title} event.`, {eventId: this.event.id});
     if (this.startNotificationTimeout) {
       this.logger.info(`Canceling start notification for ${this.event.title} event.`, {eventId: this.event.id});
       this.startNotificationTimeout.clear();
