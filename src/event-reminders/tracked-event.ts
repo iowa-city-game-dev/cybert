@@ -1,7 +1,6 @@
 import {EventNotifier} from './event-notifier';
-import {GameDevTogetherEventNotifier} from './game-dev-together-event-notifier';
-import {GameDevDiscussionsEventNotifier} from './game-dev-discussions-event-notifier';
-import {GeneralEventNotifier} from './general-event-notifier';
+import {GameDevTogetherNotificationStrategy} from './game-dev-together-notification-strategy';
+import {GeneralNotificationStrategy} from './general-notification-strategy';
 import {Logger} from '../utils/logger';
 import {CalendarEvent, EventType} from './calendar-event';
 import {DialogUtils} from '../utils/dialog-utils';
@@ -10,13 +9,15 @@ import {RandomUtils} from '../utils/random-utils';
 import {Guild} from 'discord.js';
 import {Constants} from '../utils/constants';
 import {DateTime} from 'luxon';
+import {GameDevDiscussionsNotificationStrategy} from './game-dev-discussions-notification-strategy';
+import {NotificationStrategy} from './notification-strategy';
 
 /**
  * This class represents a calendar event that is being tracked in order to provide notifications.
  */
 export class TrackedEvent {
   private event: CalendarEvent;
-  private nextEventStartTime: DateTime | null;
+  private nextEventStartTime: DateTime | undefined;
   private eventNotifier: EventNotifier;
 
   public get id(): string {
@@ -29,23 +30,27 @@ export class TrackedEvent {
     this.event = event;
     this.nextEventStartTime = this.getNextEventStartTime(relatedEvents);
 
-    switch (event.type) {
+    let notificationStrategy: NotificationStrategy;
+    switch (this.event.type) {
       case EventType.GameDevDiscussions: {
-        this.eventNotifier = new GameDevDiscussionsEventNotifier(logger, dialogUtils, messageUtils, guild, randomUtils,
-            constants, event, this.nextEventStartTime);
+        notificationStrategy = new GameDevDiscussionsNotificationStrategy(logger, dialogUtils, messageUtils, guild,
+            randomUtils, constants);
         break;
       }
       case EventType.GameDevTogether: {
-        this.eventNotifier =
-            new GameDevTogetherEventNotifier(logger, dialogUtils, messageUtils, guild, randomUtils, constants, event);
+        notificationStrategy = new GameDevTogetherNotificationStrategy(logger, dialogUtils, messageUtils, guild,
+            randomUtils, constants);
         break;
       }
       case EventType.General: {
-        this.eventNotifier =
-            new GeneralEventNotifier(logger, dialogUtils, messageUtils, guild, randomUtils, constants, event);
+        notificationStrategy = new GeneralNotificationStrategy(logger, dialogUtils, messageUtils, guild, randomUtils,
+            constants);
         break;
       }
     }
+
+    this.eventNotifier = new EventNotifier(logger, constants, notificationStrategy, this.event,
+        this.nextEventStartTime);
   }
 
   /**
@@ -83,10 +88,10 @@ export class TrackedEvent {
    * Get the start time of the next recurrence of the event, if one exists.
    *
    * @param relatedEvents Other recurrences of the event, if they exist.
-   * @private The start time of the next recurrence of the event, or `null` if none exists.
+   * @private The start time of the next recurrence of the event, or `undefined` if none exists.
    */
-  private getNextEventStartTime(relatedEvents: CalendarEvent[]): DateTime | null {
-    let nextEventStartTime: DateTime | null = null;
+  private getNextEventStartTime(relatedEvents: CalendarEvent[]): DateTime | undefined {
+    let nextEventStartTime: DateTime | undefined;
     if (relatedEvents) {
       for (const relatedEvent of relatedEvents) {
         if (relatedEvent.startTime > this.event.startTime &&
@@ -104,7 +109,7 @@ export class TrackedEvent {
    * @param nextEventStartTime The new start time.
    * @return A boolean indicating whether the start time has changed.
    */
-  private nextEventStartTimeChanged(nextEventStartTime: DateTime | null): boolean {
+  private nextEventStartTimeChanged(nextEventStartTime: DateTime | undefined): boolean {
     if (!this.nextEventStartTime || !nextEventStartTime) {
       return this.nextEventStartTime !== nextEventStartTime;
     } else {

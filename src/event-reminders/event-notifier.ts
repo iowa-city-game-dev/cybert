@@ -1,17 +1,13 @@
 import {CalendarEvent} from './calendar-event';
 import {Logger} from '../utils/logger';
 import {DateTime} from 'luxon';
-import {DialogUtils} from '../utils/dialog-utils';
-import {MessageUtils} from '../utils/message-utils';
-import {RandomUtils} from '../utils/random-utils';
 import {Constants} from '../utils/constants';
-import {Guild} from 'discord.js';
+import {NotificationStrategy} from './notification-strategy';
 
-export abstract class EventNotifier {
-  constructor(protected readonly logger: Logger, protected readonly dialogUtils: DialogUtils,
-      protected readonly messageUtils: MessageUtils, protected readonly guild: Guild,
-      protected readonly randomUtils: RandomUtils, protected readonly constants: Constants,
-      protected event: CalendarEvent, protected nextEventStartTime: DateTime | null) {
+export class EventNotifier {
+  constructor(private readonly logger: Logger, private readonly constants: Constants,
+      private readonly notificationStrategy: NotificationStrategy, private event: CalendarEvent,
+      private nextEventStartTime?: DateTime) {
     this.logger.info('Creating new event notifier.', {
       eventType: event.type.toString(),
       eventId: event.id,
@@ -22,7 +18,7 @@ export abstract class EventNotifier {
         nextEventStartTime.setZone(this.constants.timeZone).toLocaleString(DateTime.DATETIME_SHORT) + ' Central' :
         'none'
     });
-    this.scheduleNotifications();
+    this.notificationStrategy.scheduleNotifications(event, nextEventStartTime);
   }
 
   /**
@@ -31,7 +27,7 @@ export abstract class EventNotifier {
    * @param event The new event to use.
    * @param nextEventStartTime The start time of the next recurrence of the event, if one exists.
    */
-  public resetEvent(event: CalendarEvent, nextEventStartTime: DateTime | null): void {
+  public resetEvent(event: CalendarEvent, nextEventStartTime?: DateTime): void {
     this.logger.info('Updating event notifier with new event details.', {
       eventType: event.type.toString(),
       eventId: event.id,
@@ -44,10 +40,14 @@ export abstract class EventNotifier {
     });
     this.event = event;
     this.nextEventStartTime = nextEventStartTime;
-    this.cancelNotifications();
-    this.scheduleNotifications();
+    this.notificationStrategy.cancelNotifications(event);
+    this.notificationStrategy.scheduleNotifications(event, nextEventStartTime);
   }
 
-  public abstract cancelNotifications(): void;
-  protected abstract scheduleNotifications(): void;
+  /**
+   * If notifications have been scheduled, cancel them.
+   */
+  public cancelNotifications(): void {
+    this.notificationStrategy.cancelNotifications(this.event);
+  }
 }
