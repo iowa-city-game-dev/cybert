@@ -61,7 +61,7 @@ jobs:
           RAILWAY_TOKEN: ${{secrets.RAILWAY_TOKEN}}
           NPM_CONFIG_PREFIX: ~/.npm-global
         run: >
-          npm install -g @railway/cli@0.2.43 &&
+          npm install -g @railway/cli@0.3.1 &&
           ~/.npm-global/bin/railway up
   pushVersionTag:
     name: Push version tag
