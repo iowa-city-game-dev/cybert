@@ -1,4 +1,3 @@
-import {EventNotifier} from './event-notifier';
 import {GameDevTogetherNotificationStrategy} from './game-dev-together-notification-strategy';
 import {GeneralNotificationStrategy} from './general-notification-strategy';
 import {Logger} from '../utils/logger';
@@ -18,7 +17,7 @@ import {NotificationStrategy} from './notification-strategy';
 export class TrackedEvent {
   private event: CalendarEvent;
   private nextEventStartTime: DateTime | undefined;
-  private eventNotifier: EventNotifier;
+  private notificationStrategy: NotificationStrategy;
 
   public get id(): string {
     return this.event.id;
@@ -30,8 +29,64 @@ export class TrackedEvent {
     this.event = event;
     this.nextEventStartTime = this.getNextEventStartTime(relatedEvents);
 
+    this.logEventInformation('Creating new tracked event.', event, this.nextEventStartTime);
+
+    this.notificationStrategy =
+        this.createNotificationStrategy(logger, dialogUtils, messageUtils, randomUtils, guild, constants, event);
+    this.notificationStrategy.scheduleNotifications(event, this.nextEventStartTime);
+  }
+
+  /**
+   * Update the calendar event with the given event if it is different than the current one.
+   *
+   * @param event The new event.
+   * @param relatedEvents Other recurrences of the event, if they exist.
+   */
+  public updateEvent(event: CalendarEvent, relatedEvents: CalendarEvent[]): void {
+    const nextEventStartTime = this.getNextEventStartTime(relatedEvents);
+    this.logEventInformation('Updating tracked event with new event details.', event, nextEventStartTime);
+
+    if (!event.equals(this.event) || this.nextEventStartTimeChanged(nextEventStartTime)) {
+      this.event = event;
+      this.nextEventStartTime = nextEventStartTime;
+      this.notificationStrategy.cancelNotifications(event);
+      this.notificationStrategy.scheduleNotifications(event, nextEventStartTime);
+    }
+  }
+
+  /**
+   * Check if the tracked event can currently be deleted.
+   *
+   * @return A boolean indicating whether the tracked event can be deleted.
+   */
+  public canBeDeleted(): boolean {
+    return !this.event.isCurrentTimeWithinOneHourOfEvent();
+  }
+
+  /**
+   * Cancel any currently scheduled event notifications.
+   */
+  public cancelNotifications(): void {
+    this.notificationStrategy.cancelNotifications(this.event);
+  }
+
+  /**
+   * Create a notification strategy, based on the given event's type.
+   *
+   * @param logger The logger.
+   * @param dialogUtils The dialog utils.
+   * @param messageUtils The message utils.
+   * @param randomUtils The random utils.
+   * @param guild The guild.
+   * @param constants The constants.
+   * @param event The event.
+   * @return A notification strategy.
+   */
+  private createNotificationStrategy(logger: Logger, dialogUtils: DialogUtils, messageUtils: MessageUtils,
+      randomUtils: RandomUtils, guild: Guild, constants: Constants, event: CalendarEvent): NotificationStrategy {
     let notificationStrategy: NotificationStrategy;
-    switch (this.event.type) {
+
+    switch (event.type) {
       case EventType.GameDevDiscussions: {
         notificationStrategy = new GameDevDiscussionsNotificationStrategy(logger, dialogUtils, messageUtils, guild,
             randomUtils, constants);
@@ -49,39 +104,27 @@ export class TrackedEvent {
       }
     }
 
-    this.eventNotifier = new EventNotifier(logger, constants, notificationStrategy, this.event,
-        this.nextEventStartTime);
+    return notificationStrategy;
   }
 
   /**
-   * Update the calendar event with the given event if it is different than the current one.
+   * Write an info log with the given message and information about the given event.
    *
-   * @param event The new event.
-   * @param relatedEvents Other recurrences of the event, if they exist.
+   * @param message The message.
+   * @param event The event.
+   * @param nextEventStartTime The start time of the next event, if there is one.
    */
-  public updateEvent(event: CalendarEvent, relatedEvents: CalendarEvent[]): void {
-    const nextEventStartTime = this.getNextEventStartTime(relatedEvents);
-    if (!event.equals(this.event) || this.nextEventStartTimeChanged(nextEventStartTime)) {
-      this.event = event;
-      this.nextEventStartTime = nextEventStartTime;
-      this.eventNotifier.resetEvent(event, nextEventStartTime);
-    }
-  }
-
-  /**
-   * Check if the tracked event can currently be deleted.
-   *
-   * @return A boolean indicating whether the tracked event can be deleted.
-   */
-  public canBeDeleted(): boolean {
-    return !this.event.isCurrentTimeWithinOneHourOfEvent();
-  }
-
-  /**
-   * Cancel any currently scheduled event notifications.
-   */
-  public cancelNotifications(): void {
-    this.eventNotifier.cancelNotifications();
+  private logEventInformation(message: string, event: CalendarEvent, nextEventStartTime?: DateTime): void {
+    this.logger.info(message, {
+      eventType: event.type.toString(),
+      eventId: event.id,
+      eventTitle: event.title,
+      eventStartTime: event.startTime.setZone(this.constants.timeZone).toLocaleString(DateTime.DATETIME_SHORT) +
+        ' Central',
+      nextEventStartTime: nextEventStartTime ?
+        nextEventStartTime.setZone(this.constants.timeZone).toLocaleString(DateTime.DATETIME_SHORT) + ' Central' :
+        'none'
+    });
   }
 
   /**
