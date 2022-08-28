@@ -60,7 +60,7 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{secrets.RAILWAY_TOKEN}}
         run: >
-          npm install -g @railway/cli@0.3.1 &&
+          npm install -g @railway/cli@2.0.10 &&
           railway up
   pushVersionTag:
     name: Push version tag
