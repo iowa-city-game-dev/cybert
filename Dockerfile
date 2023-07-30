@@ -1,4 +1,4 @@
-FROM node:15.14.0-alpine3.13 AS develop
+FROM node:18.17.0-alpine3.17 AS develop
 
 RUN \
   addgroup -S cybert && \
