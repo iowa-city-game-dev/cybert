@@ -74,7 +74,7 @@ _**Note:** All the emoji used here were downloaded from [discordemojis.com](http
 
 ### Running CyBert on your machine
 
-Before running CyBert, you'll need to create a `.env` file at the project root, containing the single line `BOT_TOKEN=<bot-token>`, replacing `<bot-token>` with the token of your bot account (see [the previous section](#creating-a-discord-bot-account-and-connecting-it-to-a-discord-server) for how to create a bot account). The bot account's token can be found under "Token" on the settings page for the bot account. This `.env` file is used by Docker Compose to set the `BOT_TOKEN` environment variable (as specified in `docker-compose.yml` and `docker-compose-prod.yml`), which CyBert uses to get the token for connecting to Discord.
+Before running CyBert, you'll need to create a [`.env` file](https://docs.docker.com/compose/environment-variables/env-file/) at the project root, containing values for the environment values CyBert needs. See [the "Environment variables" section](#environment-variables) below for details on the required environment variables.
 
 #### Development mode
 
@@ -83,6 +83,16 @@ To run the project in development mode, run the command `docker compose up --bui
 #### Production mode
 
 To run the project in production mode, run the command `docker compose -f docker-compose-prod.yml up --build` from the project root. This will build the `production` stage of the Dockerfile and then run the resulting image inside a container (as specified in `docker-compose-prod.yml`).
+
+### Environment variables
+
+CyBert reads in environment-specific configurations and secrets via environment variables. In development environments, the environment variables are set using a [`.env` file](https://docs.docker.com/compose/environment-variables/env-file/). In production, they are set using [Fly.io secrets](https://fly.io/docs/reference/secrets/).
+
+The following environment variables are used by CyBert:
+
+- `BOT_TOKEN`: The token associated with the bot account, which CyBert uses to log in to Discord. See [the "Creating a Discord bot account and connecting it to a Discord server" section](#creating-a-discord-bot-account-and-connecting-it-to-a-discord-server) above for instructions on how to create a bot account). The bot account's token can be found under "Token" on the settings page for the bot account.
+- `GOOGLE_API_KEY`: An API key on [Google Cloud Platform](https://cloud.google.com/gcp) associated with the Google Calendar API. This is used by CyBert for reading events from a Google Calendar.
+- `GOOGLE_CALENDAR_ID`: The ID of a public Google Calendar. This tells CyBert which Google Calendar to read events from.
 
 ### Version control
 
