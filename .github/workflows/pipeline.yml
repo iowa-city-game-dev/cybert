@@ -52,13 +52,14 @@ jobs:
       - name: Set project version
         id: setProjectVersion
         run: npm --no-git-tag-version version ${{needs.getVersion.outputs.version}}
+      - name: Set up flyctl
+        id: setUpFlyctl
+        uses: superfly/flyctl-actions/setup-flyctl@v1.4
       - name: Deploy
         id: deploy
         env:
-          RAILWAY_TOKEN: ${{secrets.RAILWAY_TOKEN}}
-        run: >
-          npm install -g @railway/cli@2.0.10 &&
-          railway up
+          FLY_API_TOKEN: ${{secrets.FLY_API_TOKEN}}
+        run: flyctl deploy --remote-only
   pushVersionTag:
     name: Push version tag
     runs-on: ubuntu-latest
