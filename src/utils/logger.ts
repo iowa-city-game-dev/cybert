@@ -68,7 +68,7 @@ export class Logger {
             }
             let log = `${info.timestamp} [${info.level}]${padding} ${info.message}`;
             if (info.error) {
-              log += `\n${info.error.stack}`;
+              log += `\n${(info.error as Error).stack}`;
             }
             return log;
           })

@@ -1,13 +1,13 @@
-import {Logger} from '../utils/logger';
-import {CalendarEvent} from './calendar-event';
-import {DialogUtils} from '../utils/dialog-utils';
-import {MessageUtils} from '../utils/message-utils';
-import {RandomUtils} from '../utils/random-utils';
-import {Constants} from '../utils/constants';
+import {Logger} from '../utils/logger.ts';
+import {CalendarEvent} from './calendar-event.ts';
+import {DialogUtils} from '../utils/dialog-utils.ts';
+import {MessageUtils} from '../utils/message-utils.ts';
+import {RandomUtils} from '../utils/random-utils.ts';
+import {Constants} from '../utils/constants.ts';
 import {Guild} from 'discord.js';
 import {setTimeoutAt, Timeout} from 'safe-timers';
 import {DateTime} from 'luxon';
-import {NotificationStrategy} from './notification-strategy';
+import {NotificationStrategy} from './notification-strategy.ts';
 
 export class GameDevTogetherNotificationStrategy implements NotificationStrategy {
   private startNotificationTimeout: Timeout | null = null;
@@ -54,7 +54,7 @@ export class GameDevTogetherNotificationStrategy implements NotificationStrategy
     try {
       await this.messageUtils.sendMessages(announcementsChannel, this.generateStartMessage(event));
     } catch (error) {
-      this.logger.error(`Unable to send start notification for ${event.title} event.`, error,
+      this.logger.error(`Unable to send start notification for ${event.title} event.`, error as Error,
           {eventId: event.id});
     }
   }

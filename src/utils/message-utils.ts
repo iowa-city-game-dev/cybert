@@ -1,7 +1,7 @@
-import {Guild, Message, MessageEmbed, TextChannel} from 'discord.js';
-import {Logger} from './logger';
-import {Constants} from './constants';
-import {RandomUtils} from './random-utils';
+import {Guild, Message, EmbedBuilder, TextChannel} from 'discord.js';
+import {Logger} from './logger.ts';
+import {Constants} from './constants.ts';
+import {RandomUtils} from './random-utils.ts';
 import {DateTime} from 'luxon';
 
 /**
@@ -47,10 +47,12 @@ export class MessageUtils {
           eventTitle,
           dateTime
       );
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
           .setDescription(`**${link}**\nClick the link above to see a countdown timer for the start of the event.`);
       await this.pretendToThink();
-      await channel.send(embed);
+      await channel.send({
+        embeds: [embed]
+      });
     } else {
       throw new Error('Unable to send countdown timer link - channel not defined.');
     }
@@ -81,13 +83,13 @@ export class MessageUtils {
    */
   public getChannel(channelName: string, guild: Guild): TextChannel | null {
     const channel = guild.channels.cache.find(
-        channel => channel.name === channelName && channel.type == 'text'
-    ) as TextChannel;
+        channel => channel.name === channelName && channel.isTextBased()
+    );
     if (!channel) {
       this.logger.warn('Unable to find channel.', {channelName});
       return null;
     }
-    return channel;
+    return channel as TextChannel;
   }
 
   /**
@@ -99,10 +101,9 @@ export class MessageUtils {
    * @return A promise that resolves after the given message has been sent.
    */
   private async sendMessage(channel: TextChannel, message: string): Promise<void> {
-    channel.startTyping();
+    channel.sendTyping();
     await this.pretendToTypeMessage(message.length);
-    channel.stopTyping();
-    await channel.send(message, {});
+    await channel.send(message);
   }
 
   /**

@@ -1,9 +1,9 @@
 import {GuildMember} from 'discord.js';
-import {Constants} from '../utils/constants';
-import {Logger} from '../utils/logger';
-import {DialogUtils} from '../utils/dialog-utils';
-import {MessageUtils} from '../utils/message-utils';
-import {RandomUtils} from '../utils/random-utils';
+import {Constants} from '../utils/constants.ts';
+import {Logger} from '../utils/logger.ts';
+import {DialogUtils} from '../utils/dialog-utils.ts';
+import {MessageUtils} from '../utils/message-utils.ts';
+import {RandomUtils} from '../utils/random-utils.ts';
 
 /**
  * This class handles `guildMemberAdd` events.
@@ -36,7 +36,7 @@ export class GuildMemberAddHandler {
     try {
       await this.messageUtils.sendMessages(generalChannel, this.generateWelcomeMessages(member));
     } catch (error) {
-      this.logger.error('Unable to send welcome message to new member.', error, {memberId: member.id});
+      this.logger.error('Unable to send welcome message to new member.', error as Error, {memberId: member.id});
     }
   }
 

@@ -1,4 +1,4 @@
-import {RandomUtils} from '../../src/utils/random-utils';
+import {RandomUtils} from '../../src/utils/random-utils.ts';
 
 describe('RandomUtils', () => {
   let randomUtils: RandomUtils;

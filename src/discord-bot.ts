@@ -1,10 +1,10 @@
-import {Constants} from './utils/constants';
-import {Client} from 'discord.js';
-import {Logger} from './utils/logger';
-import {GuildMemberAddHandler} from './handlers/guild-member-add-handler';
-import {GuildCreateHandler} from './handlers/guild-create-handler';
-import {MessageHandler} from './handlers/message-handler';
-import {EventTracker} from './event-reminders/event-tracker';
+import {Constants} from './utils/constants.ts';
+import {Client, Events} from 'discord.js';
+import {Logger} from './utils/logger.ts';
+import {GuildMemberAddHandler} from './handlers/guild-member-add-handler.ts';
+import {GuildCreateHandler} from './handlers/guild-create-handler.ts';
+import {MessageHandler} from './handlers/message-handler.ts';
+import {EventTracker} from './event-reminders/event-tracker.ts';
 
 /**
  * This class is responsible for setting up the Discord Bot.
@@ -29,10 +29,10 @@ export class DiscordBot {
    * Set up event handlers.
    */
   private setUpEventHandlers(): void {
-    this.discordClient.on('ready', () => this.logger.info('CyBert is ready.'));
-    this.discordClient.on('guildCreate', guild => this.guildCreateHandler.handleEvent(guild));
-    this.discordClient.on('guildMemberAdd', member => this.guildMemberAddHandler.handleEvent(member));
-    this.discordClient.on('message', message => this.messageHandler.handleEvent(message));
+    this.discordClient.on(Events.ClientReady, () => this.logger.info('CyBert is ready.'));
+    this.discordClient.on(Events.GuildCreate, guild => this.guildCreateHandler.handleEvent(guild));
+    this.discordClient.on(Events.GuildMemberAdd, member => this.guildMemberAddHandler.handleEvent(member));
+    this.discordClient.on(Events.MessageCreate, message => this.messageHandler.handleEvent(message));
   }
 
   /**
@@ -43,9 +43,13 @@ export class DiscordBot {
   private async login(): Promise<void> {
     try {
       await this.discordClient.login(this.constants.botToken);
-      this.eventTracker.initialize(this.discordClient.guilds.cache.array()[0]);
+      const guild = this.discordClient.guilds.cache.first();
+      if (!guild) {
+        throw new Error('No guild found.');
+      }
+      this.eventTracker.initialize(guild);
     } catch (error) {
-      this.logger.error('CyBert failed to start.', error);
+      this.logger.error('CyBert failed to start.', error as Error);
     }
   }
 }

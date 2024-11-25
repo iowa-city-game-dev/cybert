@@ -1,8 +1,8 @@
 import {Guild} from 'discord.js';
-import {Constants} from '../utils/constants';
-import {Logger} from '../utils/logger';
-import {MessageUtils} from '../utils/message-utils';
-import {DialogUtils} from '../utils/dialog-utils';
+import {Constants} from '../utils/constants.ts';
+import {Logger} from '../utils/logger.ts';
+import {MessageUtils} from '../utils/message-utils.ts';
+import {DialogUtils} from '../utils/dialog-utils.ts';
 
 /**
  * This class handles `guildCreate` events.
@@ -34,7 +34,7 @@ export class GuildCreateHandler {
     try {
       await this.messageUtils.sendMessages(generalChannel, this.getIntroductionMessages());
     } catch (error) {
-      this.logger.error('Unable to send introduction.', error);
+      this.logger.error('Unable to send introduction.', error as Error);
     }
   }
 

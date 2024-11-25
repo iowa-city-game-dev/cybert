@@ -1,14 +1,14 @@
-import {DiscordBot} from '../src/discord-bot';
-import {Constants} from '../src/utils/constants';
-import {Client, Collection, Guild, GuildMember, Message} from 'discord.js';
-import {GuildCreateHandler} from '../src/handlers/guild-create-handler';
-import {GuildMemberAddHandler} from '../src/handlers/guild-member-add-handler';
+import {DiscordBot} from '../src/discord-bot.ts';
+import {Constants} from '../src/utils/constants.ts';
+import {Client, Collection, Events, Guild, GuildMember, Message} from 'discord.js';
+import {GuildCreateHandler} from '../src/handlers/guild-create-handler.ts';
+import {GuildMemberAddHandler} from '../src/handlers/guild-member-add-handler.ts';
 import createSpyObj = jasmine.createSpyObj;
 import SpyObj = jasmine.SpyObj;
-import {Logger} from '../src/utils/logger';
-import {MessageHandler} from '../src/handlers/message-handler';
-import {EventTracker} from '../src/event-reminders/event-tracker';
-import {TestHelper} from './test-helper';
+import {Logger} from '../src/utils/logger.ts';
+import {MessageHandler} from '../src/handlers/message-handler.ts';
+import {EventTracker} from '../src/event-reminders/event-tracker.ts';
+import {TestHelper} from './test-helper.ts';
 
 describe('DiscordBot', () => {
   const botToken = 'botToken';
@@ -51,9 +51,6 @@ describe('DiscordBot', () => {
 
   describe('initialize', () => {
     it('should set the client event handlers', () => {
-      const guildCreateEvent = 'guildCreate';
-      const guildMemberAddEvent = 'guildMemberAdd';
-      const messageEvent = 'message';
       const mockGuild: Guild = createSpyObj('mockGuild', [], {id: 'guildId'});
       const mockGuildMember: GuildMember = createSpyObj('mockGuildMember', [], {id: 'guildMember'});
       const mockMessage: Message = createSpyObj('mockMessage', [], {id: 'message'});
@@ -66,16 +63,16 @@ describe('DiscordBot', () => {
 
       discordBot.initialize();
 
-      expect(eventToHandler.has(guildCreateEvent)).toBeTrue();
-      (eventToHandler.get(guildCreateEvent) as (guild: Guild) => unknown)(mockGuild);
+      expect(eventToHandler.has(Events.GuildCreate)).toBeTrue();
+      (eventToHandler.get(Events.GuildCreate) as (guild: Guild) => unknown)(mockGuild);
       expect(mockGuildCreateHandler.handleEvent).toHaveBeenCalledOnceWith(mockGuild);
 
-      expect(eventToHandler.has(guildMemberAddEvent)).toBeTrue();
-      (eventToHandler.get(guildMemberAddEvent) as (member: GuildMember) => unknown)(mockGuildMember);
+      expect(eventToHandler.has(Events.GuildMemberAdd)).toBeTrue();
+      (eventToHandler.get(Events.GuildMemberAdd) as (member: GuildMember) => unknown)(mockGuildMember);
       expect(mockGuildMemberAddHandler.handleEvent).toHaveBeenCalledOnceWith(mockGuildMember);
 
-      expect(eventToHandler.has(messageEvent)).toBeTrue();
-      (eventToHandler.get(messageEvent) as (message: Message) => unknown)(mockMessage);
+      expect(eventToHandler.has(Events.MessageCreate)).toBeTrue();
+      (eventToHandler.get(Events.MessageCreate) as (message: Message) => unknown)(mockMessage);
       expect(mockMessageHandler.handleEvent).toHaveBeenCalledOnceWith(mockMessage);
     });
 

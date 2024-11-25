@@ -1,12 +1,12 @@
 import SpyObj = jasmine.SpyObj;
-import {Logger} from '../../src/utils/logger';
-import {Constants} from '../../src/utils/constants';
-import {DialogUtils} from '../../src/utils/dialog-utils';
-import {MessageUtils} from '../../src/utils/message-utils';
+import {Logger} from '../../src/utils/logger.ts';
+import {Constants} from '../../src/utils/constants.ts';
+import {DialogUtils} from '../../src/utils/dialog-utils.ts';
+import {MessageUtils} from '../../src/utils/message-utils.ts';
 import createSpyObj = jasmine.createSpyObj;
 import {Guild, GuildMember, TextChannel} from 'discord.js';
-import {GuildMemberAddHandler} from '../../src/handlers/guild-member-add-handler';
-import {RandomUtils} from '../../src/utils/random-utils';
+import {GuildMemberAddHandler} from '../../src/handlers/guild-member-add-handler.ts';
+import {RandomUtils} from '../../src/utils/random-utils.ts';
 
 describe('GuildMemberAddHandler', () => {
   const generalChannelName = 'generalChannelName';
@@ -40,7 +40,7 @@ describe('GuildMemberAddHandler', () => {
     beforeEach(() => {
       mockGuild = createSpyObj('mockGuild', [], {id: 'guildId'});
       mockGuildMember = createSpyObj('mockGuildMember', ['toString'], {id: guildMemberId, guild: mockGuild});
-      mockGuildMember.toString.and.returnValue(`<${guildMemberId}>`);
+      mockGuildMember.toString.and.returnValue(`<@${guildMemberId}>`);
       mockWelcomeChannel = createSpyObj('mockWelcomeChannel', ['send']);
       mockMessageUtils.getChannel.and.callFake((channelName, guild) => {
         if (channelName === generalChannelName && guild === mockGuild) {
@@ -58,7 +58,7 @@ describe('GuildMemberAddHandler', () => {
       guildMemberAddHandler.handleEvent(mockGuildMember);
 
       expect(mockMessageUtils.sendMessages).toHaveBeenCalledOnceWith(mockWelcomeChannel, [
-        `Hello <${guildMemberId}>. ${robotNoise1} Welcome to the group. Please familiarize yourself with your ` +
+        `Hello <@${guildMemberId}>. ${robotNoise1} Welcome to the group. Please familiarize yourself with your ` +
           'surroundings.',
         'When you are ready, we would love to hear a little bit about you.',
         robotNoise2

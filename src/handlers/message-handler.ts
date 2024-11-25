@@ -1,6 +1,6 @@
 import {Message} from 'discord.js';
-import {Logger} from '../utils/logger';
-import {MessageUtils} from '../utils/message-utils';
+import {Logger} from '../utils/logger.ts';
+import {MessageUtils} from '../utils/message-utils.ts';
 
 /**
  * This class handles `message` events.
@@ -111,7 +111,7 @@ export class MessageHandler {
    * @return `true` if the messsage mentions CyBert, or `false` if it does not.
    */
   private static mentionsCybert(message: Message): boolean {
-    const cybertUser = message.guild?.me;
+    const cybertUser = message.guild?.members.me;
     if (cybertUser) {
       return message.mentions.has(cybertUser, {ignoreEveryone: true, ignoreRoles: true});
     } else {
@@ -134,7 +134,7 @@ export class MessageHandler {
       try {
         await this.messageUtils.addReaction(message);
       } catch (error) {
-        this.logger.error('Unable to add reaction to message.', error, {
+        this.logger.error('Unable to add reaction to message.', error as Error, {
           messageId: message.id,
           authorId: message.author.id
         });

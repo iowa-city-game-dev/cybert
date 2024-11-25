@@ -1,18 +1,19 @@
-import {Constants} from '../../src/utils/constants';
+import {Constants} from '../../src/utils/constants.ts';
 import SpyObj = jasmine.SpyObj;
-import {MessageUtils} from '../../src/utils/message-utils';
+import {MessageUtils} from '../../src/utils/message-utils.ts';
 import {Collection, Guild, GuildChannel, GuildChannelManager, GuildEmoji, Message, TextChannel} from 'discord.js';
-import {RandomUtils} from '../../src/utils/random-utils';
+import {RandomUtils} from '../../src/utils/random-utils.ts';
 import createSpyObj = jasmine.createSpyObj;
 import clock = jasmine.clock;
-import {TestHelper} from '../test-helper';
-import {Logger} from '../../src/utils/logger';
+import {TestHelper} from '../test-helper.ts';
+import {Logger} from '../../src/utils/logger.ts';
 
 describe('MessageUtils', () => {
   const botMaxThinkingTimeInSeconds = 10;
   const botAverageWordsPerMinute = 50;
   const botMaxVariationInWordsPerMinute = 3;
   const averageCharactersPerWord = 4;
+  const randomNumbers: readonly number[] = [.31, .84, .49, .04];
 
   let mockLogger: SpyObj<Logger>;
   let mockConstants: SpyObj<Constants>;
@@ -28,6 +29,7 @@ describe('MessageUtils', () => {
       averageCharactersPerWord
     });
     mockRandomUtils = createSpyObj('mockRandomUtils', ['generateRandomNumber', 'chooseRandomString']);
+    mockRandomUtils.generateRandomNumber.and.returnValues(...randomNumbers);
     messageUtils = new MessageUtils(mockLogger, mockConstants, mockRandomUtils);
   });
 
@@ -38,14 +40,12 @@ describe('MessageUtils', () => {
   describe('sendMessages', () => {
     const message1 = 'Message 1.';
     const message2 = 'This is message 2.';
-    const randomNumbers: readonly number[] = [.31, .84, .49, .04];
 
     let mockChannel: SpyObj<TextChannel>;
 
     beforeEach(() => {
       clock().install();
-      mockChannel = createSpyObj('mockChannel', ['startTyping', 'stopTyping', 'send']);
-      mockRandomUtils.generateRandomNumber.and.returnValues(...randomNumbers);
+      mockChannel = createSpyObj('mockChannel', ['sendTyping', 'send']);
     });
 
     afterEach(() => clock().uninstall());
@@ -62,24 +62,22 @@ describe('MessageUtils', () => {
       clock().tick(calculateThinkingTime(randomNumbers[0]) - 1);
       await TestHelper.clearEventQueue();
 
-      expect(mockChannel.startTyping).not.toHaveBeenCalled();
+      expect(mockChannel.sendTyping).not.toHaveBeenCalled();
 
       clock().tick(1);
       await TestHelper.clearEventQueue();
 
-      expect(mockChannel.startTyping).toHaveBeenCalled();
+      expect(mockChannel.sendTyping).toHaveBeenCalled();
 
       clock().tick(calculateTypingTime(message1.length, randomNumbers[1]) - 1);
       await TestHelper.clearEventQueue();
 
-      expect(mockChannel.stopTyping).not.toHaveBeenCalled();
+      expect(mockChannel.send).not.toHaveBeenCalled();
 
       clock().tick(1);
       await TestHelper.clearEventQueue();
 
-      expect(mockChannel.stopTyping).toHaveBeenCalled();
-      expect(mockChannel.stopTyping).toHaveBeenCalledBefore(mockChannel.send);
-      expect(mockChannel.send).toHaveBeenCalledOnceWith(message1, {});
+      expect(mockChannel.send).toHaveBeenCalledOnceWith(message1);
     });
 
     it('should send multiple messages with the proper timing', async () => {
@@ -90,25 +88,23 @@ describe('MessageUtils', () => {
       clock().tick(calculateThinkingTime(randomNumbers[0]) - 1);
       await TestHelper.clearEventQueue();
 
-      expect(mockChannel.startTyping).toHaveBeenCalledTimes(0);
+      expect(mockChannel.sendTyping).toHaveBeenCalledTimes(0);
 
       clock().tick(1);
       await TestHelper.clearEventQueue();
 
-      expect(mockChannel.startTyping).toHaveBeenCalledTimes(1);
+      expect(mockChannel.sendTyping).toHaveBeenCalledTimes(1);
 
       clock().tick(calculateTypingTime(message1.length, randomNumbers[1]) - 1);
       await TestHelper.clearEventQueue();
 
-      expect(mockChannel.stopTyping).toHaveBeenCalledTimes(0);
       expect(mockChannel.send).toHaveBeenCalledTimes(0);
 
       clock().tick(1);
       await TestHelper.clearEventQueue();
 
-      expect(mockChannel.stopTyping).toHaveBeenCalledTimes(1);
       expect(mockChannel.send).toHaveBeenCalledTimes(1);
-      expect(mockChannel.send).toHaveBeenCalledWith(message1, {});
+      expect(mockChannel.send).toHaveBeenCalledWith(message1);
 
       // Start steps for message2.
 
@@ -117,25 +113,23 @@ describe('MessageUtils', () => {
       clock().tick(calculateThinkingTime(randomNumbers[2]) - 1);
       await TestHelper.clearEventQueue();
 
-      expect(mockChannel.startTyping).toHaveBeenCalledTimes(1);
+      expect(mockChannel.sendTyping).toHaveBeenCalledTimes(1);
 
       clock().tick(1);
       await TestHelper.clearEventQueue();
 
-      expect(mockChannel.startTyping).toHaveBeenCalledTimes(2);
+      expect(mockChannel.sendTyping).toHaveBeenCalledTimes(2);
 
       clock().tick(calculateTypingTime(message2.length, randomNumbers[3]) - 1);
       await TestHelper.clearEventQueue();
 
-      expect(mockChannel.stopTyping).toHaveBeenCalledTimes(1);
       expect(mockChannel.send).toHaveBeenCalledTimes(1);
 
       clock().tick(1);
       await TestHelper.clearEventQueue();
 
-      expect(mockChannel.stopTyping).toHaveBeenCalledTimes(2);
       expect(mockChannel.send).toHaveBeenCalledTimes(2);
-      expect(mockChannel.send).toHaveBeenCalledWith(message2, {});
+      expect(mockChannel.send).toHaveBeenCalledWith(message2);
     });
 
     it('should throw an error if the channel is not defined', async () => {
@@ -182,7 +176,6 @@ describe('MessageUtils', () => {
           }
         }
       });
-      mockRandomUtils.generateRandomNumber.and.returnValue(0);
       mockRandomUtils.chooseRandomString.and.callFake(possibleStrings => possibleStrings[0]);
     });
 
@@ -195,7 +188,7 @@ describe('MessageUtils', () => {
 
       messageUtils.addReaction(mockMessage);
 
-      clock().tick(calculateThinkingTime(0) - 1);
+      clock().tick(calculateThinkingTime(randomNumbers[0]) - 1);
       await TestHelper.clearEventQueue();
 
       expect(mockMessage.react).not.toHaveBeenCalled();
@@ -225,7 +218,7 @@ describe('MessageUtils', () => {
 
       const promise = messageUtils.addReaction(mockMessage);
 
-      clock().tick(calculateThinkingTime(0));
+      clock().tick(calculateThinkingTime(randomNumbers[0]));
       await TestHelper.clearEventQueue();
 
       try {
@@ -249,10 +242,8 @@ describe('MessageUtils', () => {
       mockGuildChannelCache = new Collection<string, GuildChannel>();
       mockGuildChannelManager = createSpyObj('mockGuildChannelManager', [], {cache: mockGuildChannelCache});
       mockGuild = createSpyObj('mockGuild', [], {channels: mockGuildChannelManager});
-      mockChannel = createSpyObj('mockChannel', [], {
-        name: channelName,
-        type: 'text'
-      });
+      mockChannel = createSpyObj('mockChannel', ['isTextBased'], {name: channelName});
+      mockChannel.isTextBased.and.returnValue(true);
     });
 
     it('should return the text channel with the given name if it exists', () => {

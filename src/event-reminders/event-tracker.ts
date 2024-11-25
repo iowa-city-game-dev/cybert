@@ -1,12 +1,12 @@
-import {Logger} from '../utils/logger';
+import {Logger} from '../utils/logger.ts';
 import {GoogleApis} from 'googleapis';
-import {Constants} from '../utils/constants';
-import {TrackedEvent} from './tracked-event';
-import {CalendarEvent, EventType} from './calendar-event';
+import {Constants} from '../utils/constants.ts';
+import {TrackedEvent} from './tracked-event.ts';
+import {CalendarEvent, EventType} from './calendar-event.ts';
 import {DateTime} from 'luxon';
-import {DialogUtils} from '../utils/dialog-utils';
-import {MessageUtils} from '../utils/message-utils';
-import {RandomUtils} from '../utils/random-utils';
+import {DialogUtils} from '../utils/dialog-utils.ts';
+import {MessageUtils} from '../utils/message-utils.ts';
+import {RandomUtils} from '../utils/random-utils.ts';
 import {Guild} from 'discord.js';
 
 /**
@@ -125,7 +125,7 @@ export class EventTracker {
           try {
             events.push(new CalendarEvent(responseItem));
           } catch (error) {
-            this.logger.error('Unable to get information from Google Calendar event.', error);
+            this.logger.error('Unable to get information from Google Calendar event.', error as Error);
           }
         }
         return events;
@@ -134,7 +134,7 @@ export class EventTracker {
         return [];
       }
     } catch (error) {
-      this.logger.error('An error occurred while retrieving calendar events.', error);
+      this.logger.error('An error occurred while retrieving calendar events.', error as Error);
       return [];
     }
   }

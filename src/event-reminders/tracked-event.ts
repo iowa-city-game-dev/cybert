@@ -1,15 +1,15 @@
-import {GameDevTogetherNotificationStrategy} from './game-dev-together-notification-strategy';
-import {GeneralNotificationStrategy} from './general-notification-strategy';
-import {Logger} from '../utils/logger';
-import {CalendarEvent, EventType} from './calendar-event';
-import {DialogUtils} from '../utils/dialog-utils';
-import {MessageUtils} from '../utils/message-utils';
-import {RandomUtils} from '../utils/random-utils';
+import {GameDevTogetherNotificationStrategy} from './game-dev-together-notification-strategy.ts';
+import {GeneralNotificationStrategy} from './general-notification-strategy.ts';
+import {Logger} from '../utils/logger.ts';
+import {CalendarEvent, EventType} from './calendar-event.ts';
+import {DialogUtils} from '../utils/dialog-utils.ts';
+import {MessageUtils} from '../utils/message-utils.ts';
+import {RandomUtils} from '../utils/random-utils.ts';
 import {Guild} from 'discord.js';
-import {Constants} from '../utils/constants';
+import {Constants} from '../utils/constants.ts';
 import {DateTime} from 'luxon';
-import {GameDevDiscussionsNotificationStrategy} from './game-dev-discussions-notification-strategy';
-import {NotificationStrategy} from './notification-strategy';
+import {GameDevDiscussionsNotificationStrategy} from './game-dev-discussions-notification-strategy.ts';
+import {NotificationStrategy} from './notification-strategy.ts';
 
 /**
  * This class represents a calendar event that is being tracked in order to provide notifications.

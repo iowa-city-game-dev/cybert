@@ -1,9 +1,9 @@
-import {GuildCreateHandler} from '../../src/handlers/guild-create-handler';
+import {GuildCreateHandler} from '../../src/handlers/guild-create-handler.ts';
 import SpyObj = jasmine.SpyObj;
-import {Logger} from '../../src/utils/logger';
-import {Constants} from '../../src/utils/constants';
-import {DialogUtils} from '../../src/utils/dialog-utils';
-import {MessageUtils} from '../../src/utils/message-utils';
+import {Logger} from '../../src/utils/logger.ts';
+import {Constants} from '../../src/utils/constants.ts';
+import {DialogUtils} from '../../src/utils/dialog-utils.ts';
+import {MessageUtils} from '../../src/utils/message-utils.ts';
 import createSpyObj = jasmine.createSpyObj;
 import {Guild, TextChannel} from 'discord.js';
 

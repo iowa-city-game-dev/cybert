@@ -1,4 +1,4 @@
-import {RandomUtils} from './random-utils';
+import {RandomUtils} from './random-utils.ts';
 
 /**
  * This class provides functions to help with constructing dialog.

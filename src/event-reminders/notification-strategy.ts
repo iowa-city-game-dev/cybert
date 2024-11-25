@@ -1,4 +1,4 @@
-import {CalendarEvent} from './calendar-event';
+import {CalendarEvent} from './calendar-event.ts';
 import {DateTime} from 'luxon';
 
 export interface NotificationStrategy {

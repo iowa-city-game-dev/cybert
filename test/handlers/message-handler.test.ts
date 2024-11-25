@@ -1,7 +1,7 @@
-import {MessageHandler} from '../../src/handlers/message-handler';
+import {MessageHandler} from '../../src/handlers/message-handler.ts';
 import SpyObj = jasmine.SpyObj;
-import {Logger} from '../../src/utils/logger';
-import {MessageUtils} from '../../src/utils/message-utils';
+import {Logger} from '../../src/utils/logger.ts';
+import {MessageUtils} from '../../src/utils/message-utils.ts';
 import createSpyObj = jasmine.createSpyObj;
 import {Client, Guild, GuildMember, Message, MessageMentions} from 'discord.js';
 
@@ -31,7 +31,11 @@ describe('MessageHandler', () => {
         }
       });
       mockCybertGuildMember = createSpyObj('mockCybertGuildMember', [], {id: cybertUserId});
-      mockGuild = createSpyObj('mockGuild', [], {me: mockCybertGuildMember});
+      mockGuild = createSpyObj('mockGuild', [], {
+        members: {
+          me: mockCybertGuildMember
+        }
+      });
       mockMessageMentions = createSpyObj('mockMessageMentions', ['has']);
       mockMessageMentions.has.and.returnValue(false);
     });

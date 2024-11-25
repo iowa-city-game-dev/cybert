@@ -1,13 +1,13 @@
-import {Logger} from '../utils/logger';
-import {CalendarEvent} from './calendar-event';
-import {DialogUtils} from '../utils/dialog-utils';
-import {MessageUtils} from '../utils/message-utils';
-import {RandomUtils} from '../utils/random-utils';
-import {Constants} from '../utils/constants';
+import {Logger} from '../utils/logger.ts';
+import {CalendarEvent} from './calendar-event.ts';
+import {DialogUtils} from '../utils/dialog-utils.ts';
+import {MessageUtils} from '../utils/message-utils.ts';
+import {RandomUtils} from '../utils/random-utils.ts';
+import {Constants} from '../utils/constants.ts';
 import {Guild} from 'discord.js';
 import {setTimeoutAt, Timeout} from 'safe-timers';
 import {DateTime} from 'luxon';
-import {NotificationStrategy} from './notification-strategy';
+import {NotificationStrategy} from './notification-strategy.ts';
 
 export class GeneralNotificationStrategy implements NotificationStrategy {
   private announcementNotificationTimeout: Timeout | null = null;
@@ -80,7 +80,8 @@ export class GeneralNotificationStrategy implements NotificationStrategy {
     try {
       await this.messageUtils.sendMessages(announcementsChannel, this.generateAnnouncementMessage(event));
     } catch (error) {
-      this.logger.error('Unable to send announcement notification for general event.', error, {eventId: event.id});
+      this.logger.error('Unable to send announcement notification for general event.', error as Error,
+          {eventId: event.id});
     }
   }
 
@@ -97,7 +98,7 @@ export class GeneralNotificationStrategy implements NotificationStrategy {
       await this.messageUtils.sendMessages(announcementsChannel, this.generateReminderMessage(event));
       await this.messageUtils.sendEventCountdownLink(announcementsChannel, event.title, event.startTime);
     } catch (error) {
-      this.logger.error('Unable to send reminder notification for general event.', error, {eventId: event.id});
+      this.logger.error('Unable to send reminder notification for general event.', error as Error, {eventId: event.id});
     }
   }
 
@@ -113,7 +114,7 @@ export class GeneralNotificationStrategy implements NotificationStrategy {
     try {
       await this.messageUtils.sendMessages(announcementsChannel, this.generateStartMessage(event));
     } catch (error) {
-      this.logger.error('Unable to send start notification for general event.', error, {eventId: event.id});
+      this.logger.error('Unable to send start notification for general event.', error as Error, {eventId: event.id});
     }
   }
 

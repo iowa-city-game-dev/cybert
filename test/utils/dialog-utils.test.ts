@@ -1,6 +1,6 @@
-import {DialogUtils} from '../../src/utils/dialog-utils';
+import {DialogUtils} from '../../src/utils/dialog-utils.ts';
 import SpyObj = jasmine.SpyObj;
-import {RandomUtils} from '../../src/utils/random-utils';
+import {RandomUtils} from '../../src/utils/random-utils.ts';
 import createSpyObj = jasmine.createSpyObj;
 
 describe('DialogUtils', () => {

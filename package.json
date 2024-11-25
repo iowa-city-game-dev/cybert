@@ -2,6 +2,7 @@
   "name": "cybert",
   "version": "0.0.0",
   "description": "A Discord bot for the Iowa City Game Dev Meetup.",
+  "type": "module",
   "repository": {
     "type": "git",
     "url": "https://github.com/iowa-city-game-dev/cybert.git"
@@ -21,25 +22,25 @@
     "start": "node dist/index.js"
   },
   "dependencies": {
-    "discord.js": "12.5.3",
-    "googleapis": "74.2.0",
-    "luxon": "1.28.1",
-    "safe-timers": "1.1.0",
-    "winston": "3.3.3"
+    "discord.js": "^14.16.3",
+    "googleapis": "^144.0.0",
+    "luxon": "^1.28.1",
+    "safe-timers": "^1.1.0",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
-    "@types/jasmine": "3.7.0",
-    "@types/luxon": "1.27.0",
-    "@types/node": "14.14.41",
-    "@types/safe-timers": "1.1.0",
-    "@types/ws": "7.4.1",
-    "@typescript-eslint/eslint-plugin": "4.22.0",
-    "@typescript-eslint/parser": "4.22.0",
-    "concurrently": "6.0.2",
-    "eslint": "7.25.0",
-    "jasmine": "3.7.0",
-    "nodemon": "3.0.1",
-    "shx": "0.3.3",
-    "typescript": "4.2.4"
+    "@eslint/js": "^9.15.0",
+    "@types/jasmine": "^5.1.5",
+    "@types/luxon": "^1.27.1",
+    "@types/node": "^22.10.1",
+    "@types/safe-timers": "^1.1.2",
+    "@types/ws": "^7.4.7",
+    "concurrently": "^6.5.1",
+    "eslint": "^9.16.0",
+    "jasmine": "^5.4.0",
+    "nodemon": "^3.1.7",
+    "shx": "^0.3.4",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.16.0"
   }
 }
