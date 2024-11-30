@@ -131,9 +131,9 @@ export class GameDevDiscussionsNotificationStrategy implements NotificationStrat
     const startTime = event.startTime.setZone(this.constants.timeZone).toLocaleString(DateTime.TIME_SIMPLE) +
         ' Central';
     const reminderOptions = [
-      `${event.title} is tomorrow at ${startTime}. Do not forget about it. (Unless you want to.)`,
-      `ATTENTION: Please remember to join us tomorrow at ${startTime} for ${event.title}. That is all.`,
-      `Oh! The next ${event.title} is tomorrow at ${startTime}. I am feeling the anticipation!`
+      `@everyone, ${event.title} is tomorrow at ${startTime}. Do not forget about it. (Unless you want to.)`,
+      `ATTENTION @everyone: Please remember to join us tomorrow at ${startTime} for ${event.title}. That is all.`,
+      `Oh! @everyone! The next ${event.title} is tomorrow at ${startTime}. I am feeling the anticipation!`
     ];
     return [
       this.randomUtils.chooseRandomString(reminderOptions),
