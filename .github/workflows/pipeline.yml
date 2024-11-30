@@ -54,7 +54,7 @@ jobs:
         run: npm --no-git-tag-version version ${{needs.getVersion.outputs.version}}
       - name: Set up flyctl
         id: setUpFlyctl
-        uses: superfly/flyctl-actions/setup-flyctl@v1.5
+        uses: superfly/flyctl-actions/setup-flyctl@1.5
         with:
           version: '0.3.44'
       - name: Deploy
