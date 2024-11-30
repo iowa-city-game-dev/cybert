@@ -8,12 +8,12 @@ jobs:
     steps:
       - name: Checkout repo
         id: checkoutRepo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
       - name: Get version
         id: getVersion
-        uses: PaulHatch/semantic-version@v5.0.3
+        uses: PaulHatch/semantic-version@v5.4.0
         with:
           major_pattern: (semver:bump-major)
           minor_pattern: (semver:bump-minor)
@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Checkout repo
         id: checkoutRepo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set project version
         id: setProjectVersion
         run: npm --no-git-tag-version version ${{needs.getVersion.outputs.version}}
@@ -48,13 +48,15 @@ jobs:
     steps:
       - name: Checkout repo
         id: checkoutRepo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Set project version
         id: setProjectVersion
         run: npm --no-git-tag-version version ${{needs.getVersion.outputs.version}}
       - name: Set up flyctl
         id: setUpFlyctl
-        uses: superfly/flyctl-actions/setup-flyctl@v1.4
+        uses: superfly/flyctl-actions/setup-flyctl@v1.5
+        with:
+          version: '0.3.44'
       - name: Deploy
         id: deploy
         env:
@@ -70,7 +72,7 @@ jobs:
     steps:
       - name: Checkout repo
         id: checkoutRepo
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
       - name: Push version tag
         id: pushVersionTag
         run: >
