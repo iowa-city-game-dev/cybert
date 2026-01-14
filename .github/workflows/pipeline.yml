@@ -8,7 +8,7 @@ jobs:
     steps:
       - name: Checkout repo
         id: checkoutRepo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.1
         with:
           fetch-depth: 0
       - name: Get version
@@ -30,7 +30,7 @@ jobs:
     steps:
       - name: Checkout repo
         id: checkoutRepo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.1
       - name: Set project version
         id: setProjectVersion
         run: npm --no-git-tag-version version ${{needs.getVersion.outputs.version}}
@@ -48,7 +48,7 @@ jobs:
     steps:
       - name: Checkout repo
         id: checkoutRepo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.1
       - name: Set project version
         id: setProjectVersion
         run: npm --no-git-tag-version version ${{needs.getVersion.outputs.version}}
@@ -56,7 +56,7 @@ jobs:
         id: setUpFlyctl
         uses: superfly/flyctl-actions/setup-flyctl@1.5
         with:
-          version: '0.3.44'
+          version: "0.4.3"
       - name: Deploy
         id: deploy
         env:
@@ -72,7 +72,7 @@ jobs:
     steps:
       - name: Checkout repo
         id: checkoutRepo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6.0.1
       - name: Push version tag
         id: pushVersionTag
         run: >
